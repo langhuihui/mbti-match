@@ -2,12 +2,10 @@
   <n-config-provider>
     <n-message-provider>
       <div class="container">
-        <!-- 关系描述放在顶部 -->
-        <div v-if="type1 && type2" class="relationship-header">
-          <n-text class="relationship-detail">{{ relationshipDetail }}</n-text>
-        </div>
-
-        <div class="personalities-container">
+        <!-- 选择视图 -->
+        <div v-if="!showResult" class="selection-view">
+          <n-text class="app-title" tag="h1">MBTI人格关系速查</n-text>
+          
           <personality-card
             class="personality-card"
             title="第一个人格"
@@ -19,15 +17,6 @@
             @open-function-description="openFunctionDescription"
           />
 
-          <!-- 关系标题悬浮在中间 -->
-          <div v-if="type1 && type2" class="relationship-floating">
-            <div class="connection-line left"></div>
-            <div class="relationship-title" :class="[relationshipCode.forward.toLowerCase(), { 'dual-relationship': relationshipCode.forward !== relationshipCode.backward }]">
-              {{ relationshipType }}
-            </div>
-            <div class="connection-line right"></div>
-          </div>
-
           <personality-card
             class="personality-card"
             title="第二个人格"
@@ -38,12 +27,107 @@
             @update:personality="(val, key) => personality2[key] = val"
             @open-function-description="openFunctionDescription"
           />
+
+          <n-button
+            v-if="type1 && type2"
+            type="primary"
+            size="large"
+            class="view-result-button"
+            @click="showResult = true"
+          >
+            查看关系分析
+          </n-button>
         </div>
 
-        <n-text v-if="hasHighlightedFunctions" class="highlight-note">
-          <n-icon><information-circle /></n-icon>
-          高亮显示的认知功能表示两个人格之间的共同或互补功能
-        </n-text>
+        <!-- 结果视图 -->
+        <div v-else class="result-view">
+          <div class="result-header">
+            <n-button
+              quaternary
+              class="back-button"
+              @click="showResult = false"
+            >
+              <template #icon>
+                <n-icon><arrow-back /></n-icon>
+              </template>
+              返回选择
+            </n-button>
+            <div class="title-group">
+              <n-text class="result-title" tag="h2">关系分析结果</n-text>
+              <n-text class="result-subtitle">
+                {{ relationshipType }}关系：{{ RELATIONSHIP_DESCRIPTIONS[relationshipCode.forward] }}
+              </n-text>
+            </div>
+          </div>
+
+          <div class="result-content">
+            <div class="type-comparison">
+              <div class="relationship-indicator">
+                <n-text class="relationship-type" strong>
+                  {{ relationshipType }}
+                </n-text>
+              </div>
+
+              <div class="type-cards">
+                <div class="type-card">
+                  <n-text strong>{{ type1 }} - {{ MBTI_TYPES[type1].name }}</n-text>
+                  <img
+                    :src="MBTI_TYPES[type1].image"
+                    :alt="type1"
+                    class="type-image"
+                  />
+                </div>
+
+                <div class="type-card">
+                  <n-text strong>{{ type2 }} - {{ MBTI_TYPES[type2].name }}</n-text>
+                  <img
+                    :src="MBTI_TYPES[type2].image"
+                    :alt="type2"
+                    class="type-image"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div class="cognitive-functions-comparison">
+              <n-card title="认知功能对比" class="functions-card">
+                <div class="functions-grid">
+                  <div class="functions-column">
+                    <div
+                      v-for="(func, index) in cognitiveFunctions1List"
+                      :key="index"
+                      :class="['function-item', {
+                        'inferior': func.isInferior,
+                        'highlighted': isHighlighted(func.code, type1, type2)
+                      }]"
+                      @click="openFunctionDescription(func)"
+                    >
+                      <span class="function-number">{{ index + 1 }}</span>
+                      <span class="function-code">{{ func.code }}</span>
+                      <span class="function-desc">{{ func.desc }}</span>
+                    </div>
+                  </div>
+
+                  <div class="functions-column">
+                    <div
+                      v-for="(func, index) in cognitiveFunctions2List"
+                      :key="index"
+                      :class="['function-item', {
+                        'inferior': func.isInferior,
+                        'highlighted': isHighlighted(func.code, type2, type1)
+                      }]"
+                      @click="openFunctionDescription(func)"
+                    >
+                      <span class="function-number">{{ index + 1 }}</span>
+                      <span class="function-code">{{ func.code }}</span>
+                      <span class="function-desc">{{ func.desc }}</span>
+                    </div>
+                  </div>
+                </div>
+              </n-card>
+            </div>
+          </div>
+        </div>
 
         <!-- 认知功能说明对话框 -->
         <n-modal
@@ -77,9 +161,10 @@ import {
   NText,
   NH1,
   NIcon,
-  NModal
+  NModal,
+  NButton
 } from 'naive-ui'
-import { InformationCircle } from '@vicons/ionicons5'
+import { ArrowBack } from '@vicons/ionicons5'
 import PersonalityCard from './components/PersonalityCard.vue'
 import { 
   MBTI_TYPES,
@@ -88,6 +173,8 @@ import {
   RELATIONSHIP_DESCRIPTIONS
 } from './constants'
 import { getMbtiRelation } from './utils/mbtiRelations'
+
+const showResult = ref(false)
 
 const personality1 = ref({
   E: false,
@@ -142,19 +229,15 @@ const hasHighlightedFunctions = computed(() => {
 const isHighlighted = (functionCode, currentType, otherType) => {
   if (!currentType || !otherType) return false
   
-  const currentFunctions = MBTI_TYPES[currentType].functions
-  const otherFunctions = MBTI_TYPES[otherType].functions
+  const currentFunctions = MBTI_TYPES[currentType].functions.slice(0, 4)
+  const otherFunctions = MBTI_TYPES[otherType].functions.slice(0, 4)
   
-  // 检查是否是相同的功能
+  // 检查当前功能是否在两个类型的前四个功能中完全相同
   const currentIndex = currentFunctions.indexOf(functionCode)
   const otherIndex = otherFunctions.indexOf(functionCode)
   
-  // 如果两个类型都有这个功能，且位置相近（±1），则高亮
-  if (currentIndex !== -1 && otherIndex !== -1) {
-    return Math.abs(currentIndex - otherIndex) <= 1
-  }
-  
-  return false
+  // 只有当功能代码完全相同，并且都在前四个功能中时才高亮
+  return currentIndex !== -1 && currentIndex === otherIndex
 }
 
 const relationshipCode = computed(() => {
@@ -245,260 +328,381 @@ const openFunctionDescription = (functionInfo) => {
 </script>
 
 <style scoped>
-/* 基础样式 */
 .container {
-  max-width: 1400px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
-  min-width: 1000px;
 }
 
-/* 关系类型颜色映射 */
-.relationship-title.identity { color: #333; border-color: #333; }
-.relationship-title.neighbour { color: #16a34a; border-color: #16a34a; }
-.relationship-title.pal { color: #2563eb; border-color: #2563eb; }
-.relationship-title.novelty { color: #9333ea; border-color: #9333ea; }
-.relationship-title.counterpart { color: #dc2626; border-color: #dc2626; }
-.relationship-title.anima { color: #ea580c; border-color: #ea580c; }
-.relationship-title.supplement { color: #0891b2; border-color: #0891b2; }
-.relationship-title.enigma { color: #4f46e5; border-color: #4f46e5; }
-.relationship-title.contrast { color: #be123c; border-color: #be123c; }
-.relationship-title.tribesman { color: #854d0e; border-color: #854d0e; }
-.relationship-title.complement { color: #0d9488; border-color: #0d9488; }
-.relationship-title.cohort { color: #7c3aed; border-color: #7c3aed; }
-.relationship-title.pedagogue { color: #0369a1; border-color: #0369a1; }
-.relationship-title.suitemate { color: #15803d; border-color: #15803d; }
-.relationship-title.advisor { color: #1d4ed8; border-color: #1d4ed8; }
-
-.relationship-title {
-  font-size: 1.6em;
-  font-weight: bold;
-  padding: 8px 20px;
-  background: rgba(255, 255, 255, 0.9);
-  border: 2px solid;
-  border-radius: 20px;
-  white-space: nowrap;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.connection-line {
-  height: 2px;
-  width: 40px;
-  background: currentColor;
-}
-
-/* 布局相关 */
-.personalities-container {
+.selection-view {
   display: flex;
-  align-items: flex-start;
-  gap: 40px;
-  margin: 20px 0;
-  position: relative;
+  flex-direction: column;
+  gap: 24px;
+  align-items: center;
+}
+
+.app-title {
+  text-align: center;
+  margin-bottom: 24px;
+  color: #333;
 }
 
 .personality-card {
-  flex: 1;
-  min-width: 300px;
-  position: relative;
-  z-index: 1;
+  width: 100%;
+  max-width: 600px;
 }
 
-/* 关系显示相关 */
-.relationship-floating {
+.view-result-button {
+  margin-top: 24px;
+  width: 200px;
+}
+
+.result-view {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.result-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.title-group {
+  flex: 1;
+  text-align: center;
+}
+
+.result-title {
+  margin: 0;
+  font-size: 1.5em;
+  color: #1e293b;
+  margin-bottom: 8px;
+}
+
+.result-subtitle {
+  font-size: 1.1em;
+  color: #64748b;
+  line-height: 1.6;
+}
+
+.type-comparison {
+  position: relative;
+  margin-bottom: 32px;
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.type-cards {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 48px;
+  width: 100%;
+}
+
+.relationship-indicator {
   position: absolute;
   left: 50%;
-  top: 120px;
-  transform: translateX(-50%);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  z-index: 2;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  background: white;
+  padding: 4px;
+  border-radius: 24px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
-.relationship-header {
-  margin-bottom: 30px;
-  padding: 24px;
-  background: #f8f9fa;
-  border-radius: 12px;
-  border: 2px solid #1976d2;
-}
-
-.relationship-header .relationship-detail {
-  font-size: 1.3em;
-  line-height: 2;
-  color: #333;
-  white-space: pre-line;
-}
-
-/* 功能相关样式 */
-.highlight-note {
-  font-size: 0.9em;
-  color: #666;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.highlight-note :deep(.n-icon) {
+.relationship-type {
+  font-size: 1.4em;
+  padding: 8px 20px;
+  background: #e3f2fd;
+  border-radius: 20px;
   color: #1976d2;
-  flex-shrink: 0;
+  white-space: nowrap;
+  display: block;
 }
 
-.cognitive-functions {
-  margin-top: 20px;
-  padding: 15px;
-  background-color: #f8f9fa;
-  border-radius: 6px;
+.type-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 24px;
+  background: #f8fafc;
+  border-radius: 8px;
+  min-width: 200px;
+  z-index: 0;
 }
 
-.functions-list {
-  margin-top: 10px;
+.type-image {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.cognitive-functions-comparison {
+  margin-top: 24px;
+}
+
+.functions-card {
+  background: white;
+}
+
+.functions-grid {
+  display: flex;
+  justify-content: space-between;
+  gap: 32px;
+  padding: 8px;
+}
+
+.functions-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .function-item {
   display: flex;
   align-items: center;
-  padding: 8px;
-  margin: 4px 0;
-  border-radius: 4px;
-  background-color: #fff;
+  padding: 12px 16px;
+  background: #f8fafc;
+  border-radius: 8px;
   transition: all 0.3s ease;
   cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.function-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: transparent;
+  transition: background-color 0.3s ease;
 }
 
 .function-item:hover {
-  background-color: #f0f7ff;
+  background: #f1f5f9;
+  transform: translateY(-1px);
 }
 
 .function-number {
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #e3f2fd;
+  background: #e2e8f0;
   border-radius: 50%;
   margin-right: 12px;
   font-size: 0.9em;
   font-weight: bold;
-  color: #1976d2;
+  color: #475569;
   flex-shrink: 0;
+  transition: all 0.3s ease;
 }
 
 .function-code {
   font-weight: bold;
   margin-right: 12px;
-  color: #1976d2;
+  color: #475569;
   width: 30px;
   flex-shrink: 0;
+  font-size: 1.1em;
 }
 
 .function-desc {
-  color: #666;
-  min-width: 0;
-  flex: 1;
+  color: #64748b;
+  font-size: 0.95em;
 }
 
-/* 特殊状态样式 */
-.inferior {
-  background-color: #f5f5f5;
+/* 主功能（前两个）样式 */
+.function-item:nth-child(-n+2) {
+  background: #f0f9ff;
 }
 
-.inferior .function-number {
-  background-color: #ffe0b2;
-  color: #ff9800;
+.function-item:nth-child(-n+2) .function-number {
+  background: #bae6fd;
+  color: #0369a1;
 }
 
-.inferior .function-code {
-  color: #ff9800;
+.function-item:nth-child(-n+2) .function-code {
+  color: #0369a1;
 }
 
-.highlighted {
-  background-color: #e3f2fd;
-  border-left: 4px solid #1976d2;
+/* 辅助功能（第三、四个）样式 */
+.function-item:nth-child(n+3) {
+  background: #f8fafc;
 }
 
-/* 模态框样式 */
-.function-modal-content {
-  padding: 16px;
+.function-item:nth-child(n+3) .function-number {
+  background: #e2e8f0;
+  color: #475569;
 }
 
-.function-modal-code {
-  display: block;
+/* 劣势功能（第四个）样式 */
+.function-item:nth-child(4) {
+  background: #f8fafc;
+  opacity: 0.8;
+}
+
+.function-item:nth-child(4) .function-number {
+  background: #e2e8f0;
+  color: #94a3b8;
+}
+
+.function-item:nth-child(4) .function-code {
+  color: #94a3b8;
+}
+
+.function-item:nth-child(4) .function-desc {
+  color: #94a3b8;
+}
+
+/* 高亮相同功能位的样式 */
+.function-item.highlighted {
+  background: #ecfdf5;
+  border: 1px solid #6ee7b7;
+}
+
+.function-item.highlighted::before {
+  background: #10b981;
+}
+
+.function-item.highlighted .function-number {
+  background: #6ee7b7;
+  color: #065f46;
+}
+
+.function-item.highlighted .function-code {
+  color: #047857;
+}
+
+.function-item.highlighted .function-desc {
+  color: #047857;
+}
+
+/* 标题样式 */
+.functions-card :deep(.n-card-header) {
+  padding: 16px 24px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.functions-card :deep(.n-card-header__main) {
   font-size: 1.2em;
-  margin-bottom: 12px;
-  color: #1976d2;
+  font-weight: bold;
+  color: #1e293b;
 }
 
-.function-modal-desc {
-  line-height: 1.6;
-  color: #333;
-}
-
-/* 移动端适配 */
-@media screen and (max-width: 1000px) {
-  .container {
-    min-width: unset;
-    padding: 10px;
+@media screen and (max-width: 768px) {
+  .result-header {
+    margin-bottom: 24px;
   }
 
-  .personalities-container {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 20px;
+  .result-title {
+    font-size: 1.3em;
   }
 
-  .relationship-floating {
-    position: relative;
-    top: 0;
-    left: 0;
-    transform: none;
-    margin: 10px 0;
-    justify-content: center;
+  .result-subtitle {
+    font-size: 1em;
   }
 
-  .relationship-header {
+  .type-cards {
+    gap: 24px;
+  }
+
+  .type-card {
+    min-width: 140px;
     padding: 16px;
-    margin-bottom: 20px;
   }
 
-  .relationship-header .relationship-detail {
-    font-size: 1.1em;
-    line-height: 1.8;
+  .type-image {
+    width: 100px;
+    height: 100px;
   }
 
-  .personality-card {
-    min-width: unset;
-  }
-}
-
-/* 超小屏幕适配 */
-@media screen and (max-width: 375px) {
-  .switch-group {
-    gap: 8px;
+  .relationship-type {
+    font-size: 1.2em;
+    padding: 6px 16px;
   }
 
-  .switch-item {
-    min-width: 60px;
-  }
-
-  .switch-item :deep(.n-switch) {
-    min-width: 45px;
-    height: 24px;
+  .functions-grid {
+    gap: 24px;
   }
 
   .function-item {
-    font-size: 0.9em;
+    padding: 8px 12px;
   }
 
-  .personality-image {
-    width: 80px;
-    height: 80px;
+  .function-number {
+    width: 24px;
+    height: 24px;
+    font-size: 0.85em;
+    margin-right: 8px;
+  }
+
+  .function-code {
+    font-size: 1em;
+    margin-right: 8px;
+  }
+
+  .function-desc {
+    font-size: 0.9em;
   }
 }
 
-.relationship-title.dual-relationship {
-  font-size: 1.4em;
-  padding: 12px 24px;
+@media screen and (max-width: 480px) {
+  .type-cards {
+    gap: 16px;
+  }
+
+  .type-card {
+    min-width: 120px;
+    padding: 12px;
+  }
+
+  .type-image {
+    width: 80px;
+    height: 80px;
+  }
+
+  .relationship-type {
+    font-size: 1em;
+    padding: 4px 12px;
+  }
+
+  .functions-grid {
+    gap: 16px;
+  }
+
+  .function-item {
+    padding: 6px 10px;
+  }
+
+  .function-number {
+    width: 20px;
+    height: 20px;
+    font-size: 0.8em;
+    margin-right: 6px;
+  }
+
+  .function-code {
+    font-size: 0.9em;
+    margin-right: 6px;
+  }
+
+  .function-desc {
+    font-size: 0.85em;
+  }
 }
 </style> 
