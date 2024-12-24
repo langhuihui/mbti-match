@@ -1,6 +1,7 @@
 {
-  "name": "mbti-relationship-checker",
-  "version": "1.0.0",
+  "name": "mbti-match",
+  "type": "module",
+  "version": "0.0.0",
   "private": true,
   "scripts": {
     "dev": "vite",
@@ -8,12 +9,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "vue": "^3.3.4",
-    "naive-ui": "^2.34.4",
-    "@vicons/ionicons5": "^0.12.0"
+    "vue": "^3.3.4"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^4.2.3",
+    "@vitejs/plugin-vue": "^4.3.4",
     "vite": "^4.4.9"
   }
 } 
