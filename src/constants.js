@@ -2,82 +2,82 @@
 export const MBTI_TYPES = {
   'INTJ': {
     name: '建筑师',
-    image: 'https://static.neris-assets.com/images/personality-types/avatars/intj-architect.svg',
+    image: '/avatars/intj-architect.svg',
     functions: ['Ni', 'Te', 'Fi', 'Se', 'Ne', 'Ti', 'Fe', 'Si']
   },
   'INTP': {
     name: '逻辑学家',
-    image: 'https://static.neris-assets.com/images/personality-types/avatars/intp-logician.svg',
+    image: '/avatars/intp-logician.svg',
     functions: ['Ti', 'Ne', 'Si', 'Fe', 'Te', 'Ni', 'Se', 'Fi']
   },
   'ENTJ': {
     name: '指挥官',
-    image: 'https://static.neris-assets.com/images/personality-types/avatars/entj-commander.svg',
+    image: '/avatars/entj-commander.svg',
     functions: ['Te', 'Ni', 'Se', 'Fi', 'Ti', 'Ne', 'Si', 'Fe']
   },
   'ENTP': {
     name: '辩论家',
-    image: 'https://static.neris-assets.com/images/personality-types/avatars/entp-debater.svg',
+    image: '/avatars/entp-debater.svg',
     functions: ['Ne', 'Ti', 'Fe', 'Si', 'Ni', 'Te', 'Fi', 'Se']
   },
   'INFJ': {
     name: '提倡者',
-    image: 'https://static.neris-assets.com/images/personality-types/avatars/infj-advocate.svg',
+    image: '/avatars/infj-advocate.svg',
     functions: ['Ni', 'Fe', 'Ti', 'Se', 'Ne', 'Fi', 'Te', 'Si']
   },
   'INFP': {
     name: '调停者',
-    image: 'https://static.neris-assets.com/images/personality-types/avatars/infp-mediator.svg',
+    image: '/avatars/infp-mediator.svg',
     functions: ['Fi', 'Ne', 'Si', 'Te', 'Fe', 'Ni', 'Se', 'Ti']
   },
   'ENFJ': {
     name: '主人公',
-    image: 'https://static.neris-assets.com/images/personality-types/avatars/enfj-protagonist.svg',
+    image: '/avatars/enfj-protagonist.svg',
     functions: ['Fe', 'Ni', 'Se', 'Ti', 'Fi', 'Ne', 'Si', 'Te']
   },
   'ENFP': {
     name: '竞选者',
-    image: 'https://static.neris-assets.com/images/personality-types/avatars/enfp-campaigner.svg',
+    image: '/avatars/enfp-campaigner.svg',
     functions: ['Ne', 'Fi', 'Te', 'Si', 'Ni', 'Fe', 'Ti', 'Se']
   },
   'ISTJ': {
     name: '物流师',
-    image: 'https://static.neris-assets.com/images/personality-types/avatars/istj-logistician.svg',
+    image: '/avatars/istj-logistician.svg',
     functions: ['Si', 'Te', 'Fi', 'Ne', 'Se', 'Ti', 'Fe', 'Ni']
   },
   'ISFJ': {
     name: '守卫者',
-    image: 'https://static.neris-assets.com/images/personality-types/avatars/isfj-defender.svg',
+    image: '/avatars/isfj-defender.svg',
     functions: ['Si', 'Fe', 'Ti', 'Ne', 'Se', 'Fi', 'Te', 'Ni']
   },
   'ESTJ': {
     name: '总经理',
-    image: 'https://static.neris-assets.com/images/personality-types/avatars/estj-executive.svg',
+    image: '/avatars/estj-executive.svg',
     functions: ['Te', 'Si', 'Ne', 'Fi', 'Ti', 'Se', 'Ni', 'Fe']
   },
   'ESFJ': {
     name: '执政官',
-    image: 'https://static.neris-assets.com/images/personality-types/avatars/esfj-consul.svg',
+    image: '/avatars/esfj-consul.svg',
     functions: ['Fe', 'Si', 'Ne', 'Ti', 'Fi', 'Se', 'Ni', 'Te']
   },
   'ISTP': {
     name: '鉴赏家',
-    image: 'https://static.neris-assets.com/images/personality-types/avatars/istp-virtuoso.svg',
+    image: '/avatars/istp-virtuoso.svg',
     functions: ['Ti', 'Se', 'Ni', 'Fe', 'Te', 'Si', 'Ne', 'Fi']
   },
   'ISFP': {
     name: '探险家',
-    image: 'https://static.neris-assets.com/images/personality-types/avatars/isfp-adventurer.svg',
+    image: '/avatars/isfp-adventurer.svg',
     functions: ['Fi', 'Se', 'Ni', 'Te', 'Fe', 'Si', 'Ne', 'Ti']
   },
   'ESTP': {
     name: '企业家',
-    image: 'https://static.neris-assets.com/images/personality-types/avatars/estp-entrepreneur.svg',
+    image: '/avatars/estp-entrepreneur.svg',
     functions: ['Se', 'Ti', 'Fe', 'Ni', 'Si', 'Te', 'Fi', 'Ne']
   },
   'ESFP': {
     name: '表演者',
-    image: 'https://static.neris-assets.com/images/personality-types/avatars/esfp-entertainer.svg',
+    image: '/avatars/esfp-entertainer.svg',
     functions: ['Se', 'Fi', 'Te', 'Ni', 'Si', 'Fe', 'Ti', 'Ne']
   }
 }
