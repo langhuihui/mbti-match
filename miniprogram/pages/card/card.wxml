@@ -1,0 +1,119 @@
+<view class="page">
+  <!-- 自定义导航栏 -->
+  <view class="custom-nav" style="padding-top: {{statusBarHeight}}px;">
+    <view class="nav-content" style="height: {{headerHeight - statusBarHeight}}px;">
+      <view class="nav-back" bindtap="goBack">
+        <view class="nav-back-icon"></view>
+      </view>
+      <text class="nav-title">人格名片</text>
+    </view>
+  </view>
+
+  <view class="content" style="padding-top: {{headerHeight + 16}}px;" wx:if="{{typeInfo}}">
+    <!-- 预览名片 -->
+    <view class="card-preview {{currentTheme}}">
+      <!-- 顶部标识 -->
+      <text class="card-brand">MBTI Match · 人格名片</text>
+
+      <!-- 用户头像昵称 -->
+      <view class="card-user-area" wx:if="{{isMyCard}}">
+        <view class="card-user-avatar-wrap" bindtap="{{hasUserInfo ? '' : 'showProfileSetup'}}">
+          <image class="card-user-avatar" src="{{hasUserInfo ? userInfo.avatarUrl : '/images/default-avatar.svg'}}" mode="aspectFill" />
+          <view class="avatar-edit-hint" wx:if="{{!hasUserInfo}}">
+            <text class="hint-text">点击设置</text>
+          </view>
+        </view>
+        <text class="card-user-name" wx:if="{{hasUserInfo}}">{{userInfo.nickname}}</text>
+        <text class="card-user-name placeholder" wx:else bindtap="showProfileSetup">点击设置昵称</text>
+      </view>
+
+      <!-- 类型信息 -->
+      <view class="card-type-area">
+        <image class="card-avatar" src="{{typeInfo.image}}" mode="aspectFit" />
+        <text class="card-type-code">{{type}}</text>
+        <text class="card-type-name">{{typeInfo.name}} · {{typeInfo.subtitle}}</text>
+        <view class="card-group-badge" style="background: {{groupInfo.color}};">
+          <text class="badge-text">{{groupInfo.name}}</text>
+        </view>
+      </view>
+
+      <!-- 座右铭 -->
+      <text class="card-motto">"{{typeInfo.motto}}"</text>
+
+      <!-- 标签 -->
+      <view class="card-tags">
+        <text class="card-tag" wx:for="{{typeInfo.tags}}" wx:key="*this">{{item}}</text>
+      </view>
+
+      <!-- 八维功能 -->
+      <view class="card-functions">
+        <text class="card-fn-title">八维认知功能</text>
+        <view class="card-fn-list">
+          <view class="card-fn-item {{item.isShadow ? 'shadow' : ''}}" wx:for="{{eightFunctions}}" wx:key="code">
+            <view class="card-fn-left">
+              <text class="card-fn-num">{{item.position}}</text>
+              <text class="card-fn-code" style="color: {{item.fnColor}};">{{item.code}}</text>
+              <text class="card-fn-name">{{item.name}}</text>
+            </view>
+            <view class="card-fn-bar-bg">
+              <view class="card-fn-bar" style="width: {{item.strength}}%; background: {{item.fnColor}};"></view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 语录 -->
+      <text class="card-quote">"{{typeInfo.quote}}"</text>
+    </view>
+
+    <!-- 主题选择 -->
+    <view class="theme-section">
+      <text class="theme-label">选择主题</text>
+      <scroll-view class="theme-scroll" scroll-x enable-flex>
+        <view
+          class="theme-btn {{currentTheme === item.key ? 'active' : ''}}"
+          wx:for="{{themes}}"
+          wx:key="key"
+          data-key="{{item.key}}"
+          bindtap="changeTheme"
+        >
+          <view class="theme-preview" style="background: linear-gradient(135deg, {{item.colors[0]}}, {{item.colors[2]}});"></view>
+          <text class="theme-name">{{item.name}}</text>
+        </view>
+      </scroll-view>
+    </view>
+
+    <!-- Canvas（隐藏，用于生成图片） -->
+    <canvas
+      type="2d"
+      id="cardCanvas"
+      class="card-canvas"
+      style="width: 375px; height: 600px;"
+    ></canvas>
+
+    <!-- 操作按钮 -->
+    <view class="action-area">
+      <button class="btn-save" bindtap="saveToAlbum" loading="{{saving}}">
+        <view class="btn-icon icon-save" wx:if="{{!saving}}"></view>
+        <text>{{saving ? '保存中...' : '保存到相册'}}</text>
+      </button>
+      <view class="btn-row">
+        <button class="btn-share-card" open-type="share">
+          <text>分享名片</text>
+        </button>
+        <button class="btn-invite" bindtap="goInvite">
+          <text>邀请匹配</text>
+        </button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 头像昵称设置弹窗 -->
+  <profile-modal 
+    show="{{showProfileModal}}" 
+    initial-avatar="{{userInfo.avatarUrl}}"
+    initial-nickname="{{userInfo.nickname}}"
+    bind:confirm="onProfileConfirm" 
+    bind:cancel="hideProfileModal" 
+  />
+</view>

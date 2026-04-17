@@ -1,0 +1,375 @@
+/* 邀请页样式 */
+.page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #1e1b4b 0%, #312e81 200rpx, var(--bg) 450rpx);
+}
+
+.custom-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+}
+
+.nav-content {
+  display: flex;
+  align-items: center;
+  padding: 0 32rpx;
+}
+
+.nav-back {
+  width: 64rpx;
+  height: 64rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.nav-back-icon {
+  width: 18rpx;
+  height: 18rpx;
+  border-left: 4rpx solid #fff;
+  border-bottom: 4rpx solid #fff;
+  transform: rotate(45deg);
+  margin-left: 6rpx;
+}
+
+.nav-title {
+  flex: 1;
+  text-align: center;
+  font-size: 34rpx;
+  font-weight: 600;
+  color: #fff;
+  margin-right: 64rpx;
+}
+
+.content {
+  padding: 0 32rpx 120rpx;
+}
+
+/* ====== 我的信息 ====== */
+.my-info-card {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 24rpx;
+  padding: 28rpx;
+  backdrop-filter: blur(20px);
+  border: 2rpx solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 32rpx;
+}
+
+.my-info-header {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.my-avatar-wrap {
+  position: relative;
+}
+
+.my-avatar {
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 50%;
+  border: 4rpx solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.my-avatar.type-avatar {
+  border-radius: 20rpx;
+  border: none;
+}
+
+.my-info-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.my-user-name {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 4rpx;
+}
+
+.my-type-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8rpx;
+}
+
+.my-type {
+  font-size: 36rpx;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: 2rpx;
+}
+
+.my-type-dot {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.my-name {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.my-subtitle {
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.4);
+  margin-top: 2rpx;
+}
+
+.my-group-badge {
+  padding: 8rpx 20rpx;
+  border-radius: 100rpx;
+}
+
+.group-badge-text {
+  font-size: 22rpx;
+  font-weight: 600;
+  color: #fff;
+}
+
+.my-motto {
+  display: block;
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.5);
+  font-style: italic;
+  margin-top: 16rpx;
+  text-align: center;
+}
+
+/* ====== 邀请说明 ====== */
+.invite-hero {
+  text-align: center;
+  padding: 24rpx 0 40rpx;
+}
+
+.invite-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  margin-bottom: 16rpx;
+}
+
+.invite-icon-dot {
+  width: 32rpx;
+  height: 32rpx;
+  border-radius: 50%;
+  border: 4rpx solid var(--primary);
+}
+
+.invite-icon-dot:first-child {
+  background: var(--primary);
+}
+
+.invite-icon-dot:last-child {
+  background: rgba(99, 102, 241, 0.2);
+}
+
+.invite-title {
+  display: block;
+  font-size: 40rpx;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 12rpx;
+}
+
+.invite-desc {
+  display: block;
+  font-size: 26rpx;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* ====== 流程步骤 ====== */
+.steps-card {
+  background: #fff;
+  border-radius: 24rpx;
+  padding: 28rpx 32rpx;
+  margin-bottom: 24rpx;
+  box-shadow: 0 2rpx 16rpx rgba(0, 0, 0, 0.04);
+}
+
+.step-item {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid #f1f5f9;
+}
+
+.step-item:last-child {
+  border-bottom: none;
+}
+
+.step-icon-wrap {
+  width: 56rpx;
+  height: 56rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16rpx;
+  background: #f1f5f9;
+  flex-shrink: 0;
+}
+
+.step-icon-wrap.done {
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.step-icon {
+  font-size: 32rpx;
+}
+
+.step-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.step-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.step-desc {
+  font-size: 22rpx;
+  color: var(--text-secondary);
+}
+
+.step-check {
+  font-size: 28rpx;
+  color: var(--success);
+  font-weight: 700;
+}
+
+/* ====== 邀请码 ====== */
+.code-card {
+  background: #fff;
+  border-radius: 24rpx;
+  padding: 32rpx;
+  text-align: center;
+  margin-bottom: 24rpx;
+  box-shadow: 0 2rpx 16rpx rgba(0, 0, 0, 0.04);
+}
+
+.code-label {
+  display: block;
+  font-size: 24rpx;
+  color: var(--text-tertiary);
+  margin-bottom: 12rpx;
+}
+
+.code-value {
+  display: block;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--primary);
+  background: rgba(99, 102, 241, 0.06);
+  padding: 16rpx 24rpx;
+  border-radius: 12rpx;
+  margin-bottom: 12rpx;
+  word-break: break-all;
+  font-family: 'SF Mono', 'Menlo', monospace;
+}
+
+.code-hint {
+  display: block;
+  font-size: 24rpx;
+  color: #94a3b8;
+  text-align: center;
+  margin-bottom: 20rpx;
+}
+
+.btn-copy {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 72rpx;
+  background: #f8fafc;
+  color: var(--text-secondary);
+  font-size: 26rpx;
+  border-radius: 36rpx;
+  border: 2rpx solid var(--border);
+}
+
+.btn-copy.copied {
+  background: rgba(16, 185, 129, 0.06);
+  color: var(--success);
+  border-color: var(--success);
+}
+
+.btn-copy::after {
+  border: none;
+}
+
+/* ====== 分享按钮 ====== */
+.action-area {
+  margin-top: 16rpx;
+}
+
+.btn-share {
+  display: flex;
+  align-items: center;
+  padding: 28rpx 36rpx;
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  border-radius: 24rpx;
+  border: none;
+  box-shadow: 0 8rpx 32rpx rgba(99, 102, 241, 0.35);
+  text-align: left;
+  line-height: 1.4;
+}
+
+.btn-share::after {
+  border: none;
+}
+
+.btn-share-icon {
+  width: 48rpx;
+  height: 48rpx;
+  margin-right: 24rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-share {
+  border: 3rpx solid rgba(255, 255, 255, 0.5);
+  position: relative;
+}
+
+.icon-share::after {
+  content: '';
+  width: 0;
+  height: 0;
+  border-left: 8rpx solid transparent;
+  border-right: 8rpx solid transparent;
+  border-bottom: 12rpx solid #fff;
+}
+
+.btn-share-text-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.btn-share-main {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #fff;
+}
+
+.btn-share-sub {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 4rpx;
+}

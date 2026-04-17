@@ -1,0 +1,186 @@
+/* ====== 全局样式 ====== */
+page {
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', sans-serif;
+  background-color: #f0f2f5;
+  color: #1e293b;
+  font-size: 28rpx;
+  line-height: 1.6;
+  --primary: #6366f1;
+  --primary-light: #818cf8;
+  --primary-dark: #4f46e5;
+  --accent: #ec4899;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --bg: #f0f2f5;
+  --card: #ffffff;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --text-tertiary: #94a3b8;
+  --border: #e2e8f0;
+  --shadow: 0 4rpx 24rpx rgba(0, 0, 0, 0.06);
+  --radius: 24rpx;
+  --radius-sm: 16rpx;
+  --radius-lg: 32rpx;
+  /* 族群色 */
+  --color-nt: #8b5cf6;
+  --color-nf: #10b981;
+  --color-sj: #0ea5e9;
+  --color-sp: #f59e0b;
+  /* 八维功能色 */
+  --color-fn1: #3b82f6;
+  --color-fn2: #10b981;
+  --color-fn3: #f59e0b;
+  --color-fn4: #ef4444;
+  --color-fn5: #8b5cf6;
+  --color-fn6: #ec4899;
+  --color-fn7: #06b6d4;
+  --color-fn8: #64748b;
+}
+
+.container {
+  padding: 0 32rpx;
+  box-sizing: border-box;
+  min-height: 100vh;
+}
+
+/* 自定义导航栏 */
+.custom-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: transparent;
+}
+
+.nav-content {
+  display: flex;
+  align-items: center;
+  padding: 0 32rpx;
+}
+
+.nav-back {
+  width: 64rpx;
+  height: 64rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+.nav-back-icon {
+  width: 20rpx;
+  height: 20rpx;
+  border-left: 4rpx solid #fff;
+  border-bottom: 4rpx solid #fff;
+  transform: rotate(45deg);
+  margin-left: 6rpx;
+}
+
+.nav-title {
+  flex: 1;
+  text-align: center;
+  font-size: 34rpx;
+  font-weight: 600;
+  color: #fff;
+  margin-right: 64rpx;
+}
+
+/* 通用按钮 */
+.btn-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 96rpx;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: #fff;
+  font-size: 32rpx;
+  font-weight: 600;
+  border-radius: 48rpx;
+  border: none;
+  box-shadow: 0 8rpx 32rpx rgba(99, 102, 241, 0.35);
+  letter-spacing: 2rpx;
+}
+
+.btn-primary::after {
+  border: none;
+}
+
+.btn-secondary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 96rpx;
+  background: #fff;
+  color: var(--primary);
+  font-size: 32rpx;
+  font-weight: 600;
+  border-radius: 48rpx;
+  border: 2rpx solid var(--primary);
+  letter-spacing: 2rpx;
+}
+
+.btn-secondary::after {
+  border: none;
+}
+
+/* 通用卡片 */
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 36rpx;
+  box-shadow: var(--shadow);
+}
+
+/* 渐变文字效果（通过 background-clip 模拟） */
+.gradient-text {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+/* 动画 */
+.fade-in {
+  animation: fadeIn 0.6s ease forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20rpx); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.slide-up {
+  animation: slideUp 0.5s ease forwards;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(60rpx); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 胶囊标签 */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 8rpx 24rpx;
+  border-radius: 100rpx;
+  font-size: 24rpx;
+  font-weight: 500;
+}
+
+.tag-primary {
+  background: rgba(99, 102, 241, 0.1);
+  color: var(--primary);
+}
+
+.tag-accent {
+  background: rgba(236, 72, 153, 0.1);
+  color: var(--accent);
+}
+
+.tag-success {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--success);
+}

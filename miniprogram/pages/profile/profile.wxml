@@ -1,0 +1,182 @@
+<view class="page">
+  <!-- 自定义导航栏 -->
+  <view class="custom-nav" style="padding-top: {{statusBarHeight}}px;">
+    <view class="nav-content" style="height: {{headerHeight - statusBarHeight}}px;">
+      <view class="nav-back" bindtap="goBack">
+        <view class="nav-back-icon"></view>
+      </view>
+      <text class="nav-title">我的</text>
+    </view>
+  </view>
+
+  <view class="content" style="padding-top: {{headerHeight + 16}}px;">
+    <!-- 用户信息卡片 -->
+    <view class="profile-card">
+      <view class="profile-main" bindtap="showProfileSetup">
+        <image
+          class="profile-avatar"
+          src="{{hasUserInfo ? userInfo.avatarUrl : '/images/default-avatar.svg'}}"
+          mode="aspectFill"
+        />
+        <view class="profile-info">
+          <text class="profile-name" wx:if="{{hasUserInfo}}">{{userInfo.nickname}}</text>
+          <text class="profile-name placeholder" wx:else>点击设置头像昵称</text>
+          <view class="profile-type-row" wx:if="{{myType}}">
+            <view class="profile-type-badge" style="background: {{myGroupInfo.color}};">
+              <text class="profile-type-text">{{myType}}</text>
+            </view>
+            <text class="profile-type-name">{{myTypeInfo.name}}</text>
+          </view>
+          <text class="profile-test-hint" wx:else bindtap="goTest">还没测试？点击开始 →</text>
+        </view>
+        <view class="profile-edit icon-edit"></view>
+      </view>
+
+      <!-- 数据统计 -->
+      <view class="profile-stats">
+        <view class="stat-item">
+          <text class="stat-num">{{stats.matchCount}}</text>
+          <text class="stat-label">匹配次数</text>
+        </view>
+        <view class="stat-divider"></view>
+        <view class="stat-item">
+          <text class="stat-num">{{stats.friendCount}}</text>
+          <text class="stat-label">好友数</text>
+        </view>
+        <view class="stat-divider"></view>
+        <view class="stat-item">
+          <text class="stat-num">{{stats.typesTested}}</text>
+          <text class="stat-label">互动类型</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 快捷操作 -->
+    <view class="quick-actions">
+      <view class="quick-btn" bindtap="goMyCard">
+        <view class="quick-icon icon-q-card"></view>
+        <text class="quick-text">我的名片</text>
+      </view>
+      <view class="quick-btn" bindtap="goInvite">
+        <view class="quick-icon icon-q-match"></view>
+        <text class="quick-text">邀请匹配</text>
+      </view>
+      <button class="quick-btn share-btn" open-type="share">
+        <view class="quick-icon icon-q-share"></view>
+        <text class="quick-text">分享</text>
+      </button>
+    </view>
+
+    <!-- Tab 切换 -->
+    <view class="tab-bar">
+      <view
+        class="tab-item {{activeTab === 'history' ? 'active' : ''}}"
+        data-tab="history"
+        bindtap="switchTab"
+      >
+        <text class="tab-text">匹配记录</text>
+        <text class="tab-count" wx:if="{{stats.matchCount > 0}}">{{stats.matchCount}}</text>
+      </view>
+      <view
+        class="tab-item {{activeTab === 'friends' ? 'active' : ''}}"
+        data-tab="friends"
+        bindtap="switchTab"
+      >
+        <text class="tab-text">好友</text>
+        <text class="tab-count" wx:if="{{stats.friendCount > 0}}">{{stats.friendCount}}</text>
+      </view>
+    </view>
+
+    <!-- 匹配记录列表 -->
+    <view class="list-section" wx:if="{{activeTab === 'history'}}">
+      <view wx:if="{{hasMatchHistory}}">
+        <view
+          class="record-card"
+          wx:for="{{matchHistory}}"
+          wx:key="date"
+          data-index="{{index}}"
+          bindtap="viewMatchDetail"
+        >
+          <view class="record-avatars">
+            <image class="record-avatar" src="{{userInfo.avatarUrl || '/images/default-avatar.svg'}}" mode="aspectFill" />
+            <view class="record-vs-icon">×</view>
+            <image class="record-avatar" src="{{item.friendAvatar || '/images/default-avatar.svg'}}" mode="aspectFill" />
+          </view>
+          <view class="record-info">
+            <view class="record-types">
+              <text class="record-type">{{item.myType}}</text>
+              <text class="record-x">×</text>
+              <text class="record-type">{{item.friendType}}</text>
+            </view>
+            <text class="record-relation">{{item.relation}}</text>
+            <view class="record-meta">
+              <text class="record-friend" wx:if="{{item.friendNickname}}">与 {{item.friendNickname}}</text>
+              <text class="record-date">{{item.dateText}}</text>
+            </view>
+          </view>
+          <view class="record-delete" catchtap="deleteMatchRecord" data-index="{{index}}">
+            <text class="delete-icon">×</text>
+          </view>
+        </view>
+      </view>
+      <view class="empty-state" wx:else>
+        <view class="empty-icon icon-empty-mail"></view>
+        <text class="empty-title">还没有匹配记录</text>
+        <text class="empty-desc">邀请好友一起来测试吧</text>
+        <button class="empty-btn" bindtap="goInvite">邀请好友匹配</button>
+      </view>
+    </view>
+
+    <!-- 好友列表 -->
+    <view class="list-section" wx:if="{{activeTab === 'friends'}}">
+      <view wx:if="{{hasFriends}}">
+        <view
+          class="friend-card"
+          wx:for="{{friends}}"
+          wx:key="id"
+          data-index="{{index}}"
+          bindtap="viewFriendCard"
+        >
+          <image
+            class="friend-avatar"
+            src="{{item.avatarUrl || '/images/default-avatar.svg'}}"
+            mode="aspectFill"
+          />
+          <view class="friend-info">
+            <text class="friend-name">{{item.nickname || '未知好友'}}</text>
+            <view class="friend-type-row" wx:if="{{item.mbtiType}}">
+              <view class="friend-type-badge" style="background: {{item.groupInfo.color || '#6366f1'}};">
+                <text class="friend-type-text">{{item.mbtiType}}</text>
+              </view>
+              <text class="friend-type-name">{{item.typeInfo.name || ''}}</text>
+            </view>
+            <text class="friend-date">{{item.dateText}}</text>
+          </view>
+          <view class="friend-delete" catchtap="deleteFriend" data-index="{{index}}">
+            <text class="delete-icon">×</text>
+          </view>
+        </view>
+      </view>
+      <view class="empty-state" wx:else>
+        <view class="empty-icon icon-empty-friends"></view>
+        <text class="empty-title">还没有好友</text>
+        <text class="empty-desc">分享给好友，一起揭秘人格关系</text>
+        <button class="empty-btn" open-type="share">分享给好友</button>
+      </view>
+    </view>
+
+    <!-- 底部操作 -->
+    <view class="bottom-actions" wx:if="{{hasMatchHistory || hasFriends}}">
+      <text class="clear-btn" bindtap="clearAllRecords">清空所有记录</text>
+    </view>
+  </view>
+
+  <!-- 头像昵称设置弹窗 -->
+  <profile-modal 
+    show="{{showProfileModal}}" 
+    initial-avatar="{{userInfo.avatarUrl}}"
+    initial-nickname="{{userInfo.nickname}}"
+    bind:confirm="onProfileConfirm" 
+    bind:cancel="hideProfileModal" 
+  />
+</view>

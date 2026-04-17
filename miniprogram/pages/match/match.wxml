@@ -1,0 +1,200 @@
+<view class="page">
+  <!-- 自定义导航栏 -->
+  <view class="custom-nav" style="padding-top: {{statusBarHeight}}px;">
+    <view class="nav-content" style="height: {{headerHeight - statusBarHeight}}px;">
+      <view class="nav-back" bindtap="goBack">
+        <view class="nav-back-icon"></view>
+      </view>
+      <text class="nav-title">{{step === 'select' ? '关系匹配' : '关系揭晓'}}</text>
+    </view>
+  </view>
+
+  <view class="content" style="padding-top: {{headerHeight + 16}}px;">
+    <!-- ====== 选择阶段 ====== -->
+    <block wx:if="{{step === 'select'}}">
+      <!-- 邀请者信息（带真实头像昵称） -->
+      <view class="inviter-card" wx:if="{{inviterInfo}}">
+        <view class="inviter-header">
+          <!-- 优先显示真实头像 -->
+          <image
+            class="inviter-avatar {{inviterAvatar ? 'real-avatar' : ''}}"
+            src="{{inviterAvatar || inviterInfo.image}}"
+            mode="{{inviterAvatar ? 'aspectFill' : 'aspectFit'}}"
+          />
+          <view class="inviter-info">
+            <text class="inviter-nickname" wx:if="{{inviterNickname}}">{{inviterNickname}}</text>
+            <text class="inviter-label">{{inviterNickname ? '的类型' : 'TA 的类型'}}</text>
+            <view class="inviter-type-row">
+              <text class="inviter-type">{{inviterType}}</text>
+              <text class="inviter-name">{{inviterInfo.name}}</text>
+            </view>
+          </view>
+          <view class="inviter-badge" style="background: {{inviterGroup.color}};">
+            <text class="inviter-badge-text">{{inviterGroup.name}}</text>
+          </view>
+        </view>
+        <text class="inviter-prompt">选择你的 MBTI 类型，揭晓你们之间的关系</text>
+      </view>
+
+      <!-- 我的选择 -->
+      <view class="my-select-area">
+        <view class="my-type-preview" wx:if="{{myTypeInfo}}">
+          <!-- 优先显示我的真实头像 -->
+          <image
+            class="my-preview-img {{hasUserInfo ? 'real-avatar' : ''}}"
+            src="{{hasUserInfo ? userInfo.avatarUrl : myTypeInfo.image}}"
+            mode="{{hasUserInfo ? 'aspectFill' : 'aspectFit'}}"
+          />
+          <view class="my-preview-info">
+            <text class="my-preview-nickname" wx:if="{{hasUserInfo}}">{{userInfo.nickname}}</text>
+            <text class="my-preview-label">我的类型</text>
+            <text class="my-preview-type">{{myType}}</text>
+            <text class="my-preview-name">{{myTypeInfo.name}}</text>
+          </view>
+        </view>
+
+        <!-- 选择方式 -->
+        <view class="method-tabs">
+          <view class="method-tab {{selectMethod === 'grid' ? 'active' : ''}}" data-method="grid" bindtap="switchMethod">
+            直接选型
+          </view>
+          <view class="method-tab {{selectMethod === 'switch' ? 'active' : ''}}" data-method="switch" bindtap="switchMethod">
+            开关选择
+          </view>
+        </view>
+
+        <!-- 开关选择 -->
+        <view class="switch-section" wx:if="{{selectMethod === 'switch'}}">
+          <view class="switch-card" wx:for="{{switchItems}}" wx:key="key">
+            <text class="switch-label-l {{!personality[item.key] ? 'active' : ''}}">{{item.labelL}}</text>
+            <view
+              class="custom-switch {{personality[item.key] ? 'on' : 'off'}}"
+              data-key="{{item.key}}"
+              bindtap="onSwitchChange"
+            >
+              <view class="switch-track"></view>
+              <view class="switch-thumb">
+                <text class="thumb-letter">{{personality[item.key] ? item.checked : item.unchecked}}</text>
+              </view>
+            </view>
+            <text class="switch-label-r {{personality[item.key] ? 'active' : ''}}">{{item.labelR}}</text>
+          </view>
+        </view>
+
+        <!-- 网格选择 -->
+        <view class="grid-section" wx:if="{{selectMethod === 'grid'}}">
+          <view class="grid-group" wx:for="{{typeGroups}}" wx:key="key">
+            <view class="grid-group-label" style="color: {{item.color}};">
+              <view class="grid-group-dot" style="background: {{item.color}};"></view>
+              {{item.name}}
+            </view>
+            <view class="grid-types">
+              <view
+                class="grid-type-btn {{myType === type.code ? 'selected' : ''}}"
+                wx:for="{{item.types}}"
+                wx:for-item="type"
+                wx:key="code"
+                data-code="{{type.code}}"
+                bindtap="onGridSelect"
+                style="{{myType === type.code ? 'border-color: ' + item.color + '; background: ' + item.bgColor : ''}}"
+              >
+                <image class="grid-type-img" src="{{type.image}}" mode="aspectFit" />
+                <text class="grid-type-code" style="{{myType === type.code ? 'color: ' + item.color : ''}}">{{type.code}}</text>
+                <text class="grid-type-name">{{type.name}}</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 揭晓按钮 -->
+      <view class="action-area">
+        <button class="btn-reveal" bindtap="revealRelation">
+          <view class="btn-reveal-dot"></view>
+          <text>揭晓我们的关系</text>
+        </button>
+      </view>
+    </block>
+
+    <!-- ====== 揭晓阶段 ====== -->
+    <block wx:if="{{step === 'reveal'}}">
+      <!-- 揭晓动画 -->
+      <view class="reveal-stage {{revealAnimation ? 'animate' : ''}}">
+        <!-- 两人对比（带真实头像） -->
+        <view class="reveal-vs">
+          <view class="reveal-person">
+            <view class="reveal-avatar-wrap">
+              <image
+                class="reveal-avatar {{hasUserInfo ? 'real-avatar' : ''}}"
+                src="{{hasUserInfo ? userInfo.avatarUrl : myTypeInfo.image}}"
+                mode="{{hasUserInfo ? 'aspectFill' : 'aspectFit'}}"
+              />
+            </view>
+            <text class="reveal-nickname" wx:if="{{hasUserInfo}}">{{userInfo.nickname}}</text>
+            <text class="reveal-type">{{myType}}</text>
+            <text class="reveal-name">{{myTypeInfo.name}}</text>
+            <text class="reveal-label">我</text>
+          </view>
+
+          <view class="reveal-center">
+            <view class="reveal-pulse"></view>
+            <text class="reveal-emoji" wx:if="{{showResult}}">{{relation.emoji}}</text>
+            <text class="reveal-loading" wx:else>...</text>
+          </view>
+
+          <view class="reveal-person">
+            <view class="reveal-avatar-wrap">
+              <image
+                class="reveal-avatar {{inviterAvatar ? 'real-avatar' : ''}}"
+                src="{{inviterAvatar || inviterInfo.image}}"
+                mode="{{inviterAvatar ? 'aspectFill' : 'aspectFit'}}"
+              />
+            </view>
+            <text class="reveal-nickname" wx:if="{{inviterNickname}}">{{inviterNickname}}</text>
+            <text class="reveal-type">{{inviterType}}</text>
+            <text class="reveal-name">{{inviterInfo.name}}</text>
+            <text class="reveal-label">TA</text>
+          </view>
+        </view>
+
+        <!-- 关系结果 -->
+        <view class="reveal-result {{showResult ? 'show' : ''}}" wx:if="{{relation}}">
+          <view class="result-badge" style="background: {{relation.color}};">
+            <text class="result-emoji">{{relation.emoji}}</text>
+            <text class="result-name">{{relation.name}}</text>
+          </view>
+          <text class="result-subtitle">{{relation.subtitle}}</text>
+
+          <!-- 星级 -->
+          <view class="result-stars">
+            <text class="result-star {{item.filled ? 'filled' : ''}}" wx:for="{{relation.stars}}" wx:key="index">★</text>
+          </view>
+
+          <text class="result-desc">{{relation.desc}}</text>
+          <text class="result-detail">{{relation.detail}}</text>
+        </view>
+      </view>
+
+      <!-- 操作按钮 -->
+      <view class="action-area" wx:if="{{showResult}}">
+        <button class="btn-detail" bindtap="viewDetail">
+          <text>查看完整分析</text>
+        </button>
+        <view class="btn-row">
+          <button class="btn-sub" bindtap="goMyCard">
+            <text>我的名片</text>
+          </button>
+          <button class="btn-sub" bindtap="goInviteBack">
+            <text>邀请TA</text>
+          </button>
+          <button class="btn-sub" open-type="share">
+            <text>分享</text>
+          </button>
+          <button class="btn-sub" bindtap="goHome">
+            <text>首页</text>
+          </button>
+        </view>
+      </view>
+    </block>
+  </view>
+</view>

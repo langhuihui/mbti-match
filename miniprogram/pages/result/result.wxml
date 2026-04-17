@@ -1,0 +1,167 @@
+<view class="page">
+  <!-- 自定义导航栏 -->
+  <view class="custom-nav" style="padding-top: {{statusBarHeight}}px;">
+    <view class="nav-content" style="height: {{headerHeight - statusBarHeight}}px;">
+      <view class="nav-back" bindtap="goBack">
+        <view class="nav-back-icon"></view>
+      </view>
+      <text class="nav-title">关系分析</text>
+    </view>
+  </view>
+
+  <view class="content" style="padding-top: {{headerHeight + 16}}px;">
+    <!-- 关系徽章 -->
+    <view class="relation-hero" wx:if="{{relation}}">
+      <text class="relation-emoji">{{relation.emoji}}</text>
+      <text class="relation-name">{{relation.name}}</text>
+      <text class="relation-subtitle">{{relation.subtitle}}</text>
+
+      <!-- 兼容度星级 -->
+      <view class="stars-row">
+        <text class="star {{item.filled ? 'filled' : ''}}" wx:for="{{relation.stars}}" wx:key="index">★</text>
+      </view>
+
+      <text class="relation-desc">{{relation.desc}}</text>
+    </view>
+
+    <!-- 类型对比 -->
+    <view class="vs-section">
+      <view class="vs-card" data-type="{{type1}}" bindtap="viewCard">
+        <image class="vs-avatar" src="{{type1Info.image}}" mode="aspectFit" />
+        <text class="vs-code">{{type1}}</text>
+        <text class="vs-name">{{type1Info.name}}</text>
+        <view class="vs-tags">
+          <text class="vs-tag" wx:for="{{type1Info.tags}}" wx:key="*this">{{item}}</text>
+        </view>
+      </view>
+
+      <view class="vs-connector">
+        <view class="vs-line"></view>
+        <view class="vs-badge" style="background: {{relation.color}};">
+          <text class="vs-badge-text">{{relation.emoji}}</text>
+        </view>
+        <view class="vs-line"></view>
+      </view>
+
+      <view class="vs-card" data-type="{{type2}}" bindtap="viewCard">
+        <image class="vs-avatar" src="{{type2Info.image}}" mode="aspectFit" />
+        <text class="vs-code">{{type2}}</text>
+        <text class="vs-name">{{type2Info.name}}</text>
+        <view class="vs-tags">
+          <text class="vs-tag" wx:for="{{type2Info.tags}}" wx:key="*this">{{item}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 非对称关系提示 -->
+    <view class="asymmetric-note" wx:if="{{!isSymmetric}}">
+      <view class="note-icon-wrap">
+        <text class="note-icon-text">!</text>
+      </view>
+      <view class="note-content">
+        <text class="note-title">非对称关系</text>
+        <text class="note-text">{{type1}} → {{type2}}：{{forwardRelation}}</text>
+        <text class="note-text">{{type2}} → {{type1}}：{{backwardRelation}}</text>
+      </view>
+    </view>
+
+    <!-- 关系深度解读 -->
+    <view class="detail-card" wx:if="{{relation}}">
+      <text class="section-title">深度解读</text>
+      <text class="detail-text">{{relation.detail}}</text>
+    </view>
+
+    <!-- 碰撞总览 -->
+    <view class="collision-summary-card">
+      <text class="section-title">认知碰撞总览</text>
+      <view class="collision-stats">
+        <view class="collision-stat">
+          <view class="stat-dot" style="background: #10b981;"></view>
+          <text class="stat-num" style="color: #10b981;">{{collisionSummary.resonance}}</text>
+          <text class="stat-label">共鸣</text>
+        </view>
+        <view class="collision-stat">
+          <view class="stat-dot" style="background: #3b82f6;"></view>
+          <text class="stat-num" style="color: #3b82f6;">{{collisionSummary.complement}}</text>
+          <text class="stat-label">互补</text>
+        </view>
+        <view class="collision-stat">
+          <view class="stat-dot" style="background: #ef4444;"></view>
+          <text class="stat-num" style="color: #ef4444;">{{collisionSummary.clash}}</text>
+          <text class="stat-label">碰撞</text>
+        </view>
+        <view class="collision-stat">
+          <view class="stat-dot" style="background: #8b5cf6;"></view>
+          <text class="stat-num" style="color: #8b5cf6;">{{collisionSummary.weave}}</text>
+          <text class="stat-label">交织</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 核心功能对比 -->
+    <view class="pairs-card">
+      <text class="section-title">核心功能对比</text>
+      <view class="pairs-header">
+        <text class="pair-h-label">{{type1}}</text>
+        <text class="pair-h-pos">功能位</text>
+        <text class="pair-h-label">{{type2}}</text>
+      </view>
+      <view class="pair-row {{item.same ? 'same' : ''}}" wx:for="{{functionPairs}}" wx:key="position">
+        <view class="pair-fn" style="background: {{item.color1}}20;">
+          <text class="pair-fn-code" style="color: {{item.color1}};">{{item.code1}}</text>
+          <text class="pair-fn-name">{{item.name1}}</text>
+        </view>
+        <view class="pair-center">
+          <text class="pair-pos-num">{{item.position}}</text>
+          <text class="pair-pos-name">{{item.posName}}</text>
+          <text class="pair-match" wx:if="{{item.same}}">✓</text>
+        </view>
+        <view class="pair-fn" style="background: {{item.color2}}20;">
+          <text class="pair-fn-code" style="color: {{item.color2}};">{{item.code2}}</text>
+          <text class="pair-fn-name">{{item.name2}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 八维碰撞详情 -->
+    <view class="collisions-card">
+      <text class="section-title">八维碰撞详解</text>
+      <view class="collision-list">
+        <view class="collision-item {{item.isShadow ? 'shadow' : ''}}" wx:for="{{collisions}}" wx:key="position">
+          <view class="ci-position">
+            <text class="ci-pos-num">{{item.position}}</text>
+            <text class="ci-pos-name">{{item.posName}}</text>
+          </view>
+          <view class="ci-center">
+            <view class="ci-fn" style="border-color: {{item.color1}};">
+              <text class="ci-fn-code" style="color: {{item.color1}};">{{item.code1}}</text>
+            </view>
+            <view class="ci-collision-badge" style="background: {{item.collisionColor}};">
+              <text class="ci-badge-emoji">{{item.collisionEmoji}}</text>
+            </view>
+            <view class="ci-fn" style="border-color: {{item.color2}};">
+              <text class="ci-fn-code" style="color: {{item.color2}};">{{item.code2}}</text>
+            </view>
+          </view>
+          <text class="ci-type" style="color: {{item.collisionColor}};">{{item.collisionName}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 操作按钮 -->
+    <view class="action-area">
+      <button class="btn-share" open-type="share">
+        <view class="btn-icon icon-share-sm"></view>
+        <text>分享给好友</text>
+      </button>
+      <view class="btn-row">
+        <button class="btn-sub" bindtap="goInvite">
+          <text>邀请匹配</text>
+        </button>
+        <button class="btn-sub" bindtap="goHome">
+          <text>返回首页</text>
+        </button>
+      </view>
+    </view>
+  </view>
+</view>

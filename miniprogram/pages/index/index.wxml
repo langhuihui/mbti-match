@@ -1,0 +1,191 @@
+<view class="page">
+  <!-- Hero 区域 -->
+  <view class="hero" style="padding-top: {{statusBarHeight + 20}}px;">
+    <!-- 装饰光球 -->
+    <view class="hero-orb orb-1"></view>
+    <view class="hero-orb orb-2"></view>
+    <view class="hero-orb orb-3"></view>
+
+    <!-- 用户信息栏 -->
+    <view class="user-bar">
+      <view class="user-info-area" bindtap="{{hasUserInfo ? 'goProfile' : 'showProfileSetup'}}">
+        <image
+          class="user-avatar"
+          src="{{hasUserInfo ? userInfo.avatarUrl : '/images/default-avatar.svg'}}"
+          mode="aspectFill"
+        />
+        <view class="user-text">
+          <text class="user-nickname" wx:if="{{hasUserInfo}}">{{userInfo.nickname}}</text>
+          <text class="user-nickname user-placeholder" wx:else>点击设置头像昵称</text>
+          <view class="user-mbti-tag" wx:if="{{myType}}" style="background: {{myGroupInfo.color}};">
+            <text class="tag-text">{{myType}}</text>
+          </view>
+        </view>
+      </view>
+      <view class="user-actions">
+        <view class="action-btn" bindtap="goProfile">
+          <view class="action-icon icon-user"></view>
+          <text class="action-label">我的</text>
+        </view>
+        <view class="action-btn" bindtap="goMyCard" wx:if="{{myType}}">
+          <view class="action-icon icon-card"></view>
+          <text class="action-label">名片</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="hero-content">
+      <view class="logo-area">
+        <view class="logo-icon-wrap">
+          <text class="logo-letter">M</text>
+        </view>
+        <text class="logo-text">MBTI Match</text>
+      </view>
+      <text class="hero-title">发现你的认知密码</text>
+      <text class="hero-subtitle">基于荣格八维认知功能理论，深度解析16种人格类型的化学反应</text>
+    </view>
+
+    <!-- 主操作区 -->
+    <view class="hero-actions">
+      <button class="btn-hero-primary" bindtap="goTestSingle">
+        <view class="btn-icon-wrap icon-explore"></view>
+        <view class="btn-text-group">
+          <text class="btn-main-text">探索我的人格</text>
+          <text class="btn-sub-text">生成专属人格名片</text>
+        </view>
+      </button>
+      <button class="btn-hero-secondary" bindtap="goTestDual">
+        <view class="btn-icon-wrap icon-match"></view>
+        <view class="btn-text-group">
+          <text class="btn-main-text">双人关系匹配</text>
+          <text class="btn-sub-text">邀请好友揭秘你们的关系</text>
+        </view>
+      </button>
+      <!-- 邀请码输入入口 -->
+      <view class="invite-code-link">
+        <text class="invite-code-link-text" bindtap="showInviteCodeInput">有邀请码？点击输入</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 群聊来源提示 -->
+  <view class="group-tip" wx:if="{{fromGroup}}">
+    <view class="group-tip-icon icon-chat"></view>
+    <text class="group-tip-text">来自群聊，邀请群友一起测试吧</text>
+    <button class="group-tip-btn" open-type="share">邀请</button>
+  </view>
+
+  <!-- 匹配记录（有数据时才显示） -->
+  <view class="history-section" wx:if="{{hasMatchHistory}}">
+    <view class="section-header">
+      <text class="section-title">最近匹配</text>
+      <text class="section-desc">和好友的关系分析记录</text>
+    </view>
+    <scroll-view class="history-scroll" scroll-x enable-flex>
+      <view
+        class="history-card"
+        wx:for="{{matchHistory}}"
+        wx:key="date"
+        data-index="{{index}}"
+        bindtap="viewMatchDetail"
+      >
+        <view class="history-avatars">
+          <image class="history-avatar me" src="{{userInfo.avatarUrl || '/images/default-avatar.svg'}}" mode="aspectFill" />
+          <view class="history-heart">×</view>
+          <image class="history-avatar friend" src="{{item.friendAvatar || '/images/default-avatar.svg'}}" mode="aspectFill" />
+        </view>
+        <view class="history-types">
+          <text class="history-type">{{item.myType}}</text>
+          <text class="history-vs">×</text>
+          <text class="history-type">{{item.friendType}}</text>
+        </view>
+        <text class="history-relation">{{item.relation}}</text>
+        <text class="history-friend-name" wx:if="{{item.friendNickname}}">与 {{item.friendNickname}}</text>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 特性展示 -->
+  <view class="features-section">
+    <view class="features-grid">
+      <view class="feature-item" wx:for="{{features}}" wx:key="title">
+        <text class="feature-icon">{{item.icon}}</text>
+        <text class="feature-title">{{item.title}}</text>
+        <text class="feature-desc">{{item.desc}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 16种类型一览 -->
+  <view class="types-section">
+    <view class="section-header">
+      <text class="section-title">16种人格类型</text>
+      <text class="section-desc">点击任意类型查看专属名片</text>
+    </view>
+
+    <view class="group-list">
+      <view class="group-card" wx:for="{{groups}}" wx:key="key">
+        <view class="group-header" style="background: {{item.bgColor}};">
+          <view class="group-badge" style="background: {{item.color}};">
+            <text class="group-badge-text">{{item.key}}</text>
+          </view>
+          <text class="group-name" style="color: {{item.color}};">{{item.name}}</text>
+        </view>
+        <view class="group-types">
+          <view
+            class="type-chip"
+            wx:for="{{item.types}}"
+            wx:for-item="type"
+            wx:key="code"
+            data-code="{{type.code}}"
+            bindtap="onTypeTap"
+          >
+            <image class="type-chip-avatar" src="{{type.image}}" mode="aspectFit" />
+            <view class="type-chip-info">
+              <text class="type-chip-code">{{type.code}}</text>
+              <text class="type-chip-name">{{type.name}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部 -->
+  <view class="footer">
+    <text class="footer-text">基于荣格认知功能理论 · 仅供娱乐参考</text>
+    <text class="footer-text">Made with ♥ by MBTI Match</text>
+  </view>
+
+  <!-- 头像昵称设置弹窗 -->
+  <profile-modal 
+    show="{{showProfileModal}}" 
+    initial-avatar="{{userInfo.avatarUrl}}"
+    initial-nickname="{{userInfo.nickname}}"
+    bind:confirm="onProfileConfirm" 
+    bind:cancel="hideProfileModal" 
+  />
+
+  <!-- 邀请码输入弹窗 -->
+  <view class="modal-overlay {{showInviteCodeModal ? 'show' : ''}}" bindtap="hideInviteCodeModal">
+    <view class="modal-content invite-code-modal" catchtap="">
+      <view class="modal-header">
+        <text class="modal-title">输入邀请码</text>
+        <text class="modal-subtitle">输入好友分享的邀请码，揭晓你们的关系</text>
+      </view>
+      <view class="code-input-area">
+        <input 
+          class="code-input" 
+          placeholder="请输入邀请码" 
+          value="{{inputInviteCode}}"
+          bindinput="onInviteCodeInput"
+          bindconfirm="submitInviteCode"
+        />
+      </view>
+      <view class="modal-actions">
+        <button class="modal-btn cancel" bindtap="hideInviteCodeModal">取消</button>
+        <button class="modal-btn confirm" bindtap="submitInviteCode">确认</button>
+      </view>
+    </view>
+  </view>
+</view>

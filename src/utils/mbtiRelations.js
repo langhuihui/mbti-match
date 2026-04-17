@@ -1,4 +1,4 @@
-import { MBTI_TYPE_ORDER } from '../constants.js';
+import { MBTI_TYPE_ORDER } from '../data/constants.js';
 
 /**
  * 判断两个 MBTI 类型之间的关系

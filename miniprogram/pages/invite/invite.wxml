@@ -1,0 +1,92 @@
+<view class="page">
+  <!-- 自定义导航栏 -->
+  <view class="custom-nav" style="padding-top: {{statusBarHeight}}px;">
+    <view class="nav-content" style="height: {{headerHeight - statusBarHeight}}px;">
+      <view class="nav-back" bindtap="goBack">
+        <view class="nav-back-icon"></view>
+      </view>
+      <text class="nav-title">邀请好友</text>
+    </view>
+  </view>
+
+  <view class="content" style="padding-top: {{headerHeight + 16}}px;">
+    <!-- 我的信息 -->
+    <view class="my-info-card">
+      <view class="my-info-header">
+        <!-- 显示真实头像（如果有） -->
+        <view class="my-avatar-wrap">
+          <image
+            class="my-avatar"
+            wx:if="{{hasUserInfo}}"
+            src="{{userInfo.avatarUrl}}"
+            mode="aspectFill"
+          />
+          <image
+            class="my-avatar type-avatar"
+            wx:else
+            src="{{myTypeInfo.image}}"
+            mode="aspectFit"
+          />
+        </view>
+        <view class="my-info-text">
+          <text class="my-user-name" wx:if="{{hasUserInfo}}">{{userInfo.nickname}}</text>
+          <view class="my-type-row">
+            <text class="my-type">{{myType}}</text>
+            <text class="my-type-dot">·</text>
+            <text class="my-name">{{myTypeInfo.name}}</text>
+          </view>
+          <text class="my-subtitle">{{myTypeInfo.subtitle}}</text>
+        </view>
+        <view class="my-group-badge" style="background: {{myGroupInfo.color}};">
+          <text class="group-badge-text">{{myGroupInfo.name}}</text>
+        </view>
+      </view>
+      <text class="my-motto">"{{myTypeInfo.motto}}"</text>
+    </view>
+
+    <!-- 邀请说明 -->
+    <view class="invite-hero">
+      <view class="invite-icon-wrap">
+        <view class="invite-icon-dot"></view>
+        <view class="invite-icon-dot"></view>
+      </view>
+      <text class="invite-title">邀请好友揭秘关系</text>
+      <text class="invite-desc">分享给好友，让TA选择自己的MBTI类型，立即揭晓你们的认知关系</text>
+    </view>
+
+    <!-- 流程步骤 -->
+    <view class="steps-card">
+      <view class="step-item {{item.done ? 'done' : ''}}" wx:for="{{steps}}" wx:key="num">
+        <view class="step-icon-wrap {{item.done ? 'done' : ''}}">
+          <text class="step-icon">{{item.icon}}</text>
+        </view>
+        <view class="step-text">
+          <text class="step-title">{{item.title}}</text>
+          <text class="step-desc">{{item.desc}}</text>
+        </view>
+        <text class="step-check" wx:if="{{item.done}}">✓</text>
+      </view>
+    </view>
+
+    <!-- 邀请码 -->
+    <view class="code-card">
+      <text class="code-label">邀请码</text>
+      <text class="code-value">{{inviteCode}}</text>
+      <text class="code-hint">好友可在首页输入此邀请码进行匹配</text>
+      <button class="btn-copy {{copied ? 'copied' : ''}}" bindtap="copyInvite">
+        {{copied ? '✓ 已复制' : '复制邀请信息'}}
+      </button>
+    </view>
+
+    <!-- 分享按钮 -->
+    <view class="action-area">
+      <button class="btn-share" open-type="share">
+        <view class="btn-share-icon icon-share"></view>
+        <view class="btn-share-text-group">
+          <text class="btn-share-main">分享给微信好友</text>
+          <text class="btn-share-sub">好友打开即可选择类型</text>
+        </view>
+      </button>
+    </view>
+  </view>
+</view>

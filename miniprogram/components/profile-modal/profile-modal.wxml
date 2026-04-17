@@ -1,0 +1,43 @@
+<!-- 头像昵称设置弹窗 -->
+<view class="modal-overlay {{show ? 'show' : ''}}" bindtap="onCancel">
+  <view class="modal-content" catchtap="">
+    <view class="modal-header">
+      <text class="modal-title">设置个人资料</text>
+      <text class="modal-subtitle">设置头像昵称，让好友认识你</text>
+    </view>
+    
+    <view class="profile-form">
+      <!-- 头像选择 -->
+      <view class="avatar-picker">
+        <button class="avatar-btn" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
+          <image
+            class="avatar-preview"
+            src="{{tempAvatarUrl || '/images/default-avatar.svg'}}"
+            mode="aspectFill"
+          />
+          <view class="avatar-edit-badge">
+            <view class="edit-icon icon-camera"></view>
+          </view>
+        </button>
+        <text class="avatar-hint">点击更换头像</text>
+      </view>
+
+      <!-- 昵称输入 -->
+      <view class="nickname-input-wrap">
+        <text class="input-label">昵称</text>
+        <input
+          class="nickname-input"
+          type="nickname"
+          placeholder="请输入昵称"
+          value="{{tempNickname}}"
+          bindinput="onNicknameInput"
+        />
+      </view>
+    </view>
+
+    <view class="modal-actions">
+      <button class="modal-btn cancel" bindtap="onCancel">取消</button>
+      <button class="modal-btn confirm" bindtap="onConfirm">确认</button>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,22 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/test/test",
+    "pages/result/result",
+    "pages/card/card",
+    "pages/invite/invite",
+    "pages/match/match",
+    "pages/profile/profile"
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#ffffff",
+    "navigationBarTitleText": "MBTI Match",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#f0f2f5",
+    "backgroundTextStyle": "dark",
+    "navigationStyle": "custom"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

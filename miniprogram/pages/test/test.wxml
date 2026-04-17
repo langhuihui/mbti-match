@@ -1,0 +1,142 @@
+<view class="page">
+  <!-- 自定义导航栏 -->
+  <view class="custom-nav" style="padding-top: {{statusBarHeight}}px;">
+    <view class="nav-content" style="height: {{headerHeight - statusBarHeight}}px;">
+      <view class="nav-back" bindtap="goBack">
+        <view class="nav-back-icon"></view>
+      </view>
+      <text class="nav-title">
+        {{mode === 'single' ? '探索我的人格' : '双人关系匹配'}}
+      </text>
+    </view>
+  </view>
+
+  <view class="content" style="padding-top: {{headerHeight + 16}}px;">
+    <!-- 双人模式步骤指示器 -->
+    <view class="step-indicator" wx:if="{{mode !== 'single'}}">
+      <view class="step {{currentPlayer >= 1 ? 'active' : ''}}">
+        <view class="step-dot">1</view>
+        <text class="step-label">我的类型</text>
+      </view>
+      <view class="step-line {{currentPlayer >= 2 ? 'active' : ''}}"></view>
+      <view class="step {{currentPlayer >= 2 ? 'active' : ''}}">
+        <view class="step-dot">2</view>
+        <text class="step-label">TA的类型</text>
+      </view>
+    </view>
+
+    <!-- 当前类型显示 -->
+    <view class="type-display">
+      <view class="type-avatar-wrap">
+        <image
+          class="type-avatar"
+          wx:if="{{currentPlayer === 1 ? type1Info : type2Info}}"
+          src="{{currentPlayer === 1 ? type1Info.image : type2Info.image}}"
+          mode="aspectFit"
+        />
+      </view>
+      <view class="type-info-area">
+        <text class="type-code">{{currentPlayer === 1 ? type1 : type2}}</text>
+        <text class="type-name">{{currentPlayer === 1 ? (type1Info.name || '') : (type2Info.name || '')}}</text>
+        <text class="type-motto" wx:if="{{currentPlayer === 1 ? type1Info.motto : type2Info.motto}}">
+          "{{currentPlayer === 1 ? type1Info.motto : type2Info.motto}}"
+        </text>
+      </view>
+    </view>
+
+    <!-- 选择方式切换 -->
+    <view class="method-tabs">
+      <view class="method-tab {{selectMethod === 'switch' ? 'active' : ''}}" data-method="switch" bindtap="switchMethod">
+        <text>开关选择</text>
+      </view>
+      <view class="method-tab {{selectMethod === 'grid' ? 'active' : ''}}" data-method="grid" bindtap="switchMethod">
+        <text>直接选型</text>
+      </view>
+    </view>
+
+    <!-- 开关选择模式 -->
+    <view class="switch-section" wx:if="{{selectMethod === 'switch'}}">
+      <view class="switch-card" wx:for="{{switchItems}}" wx:key="key">
+        <text class="switch-label-l {{!(currentPlayer === 1 ? personality1[item.key] : personality2[item.key]) ? 'active' : ''}}">
+          {{item.labelL}}
+        </text>
+        <view
+          class="custom-switch {{(currentPlayer === 1 ? personality1[item.key] : personality2[item.key]) ? 'on' : 'off'}}"
+          data-key="{{item.key}}"
+          bindtap="onSwitchChange"
+        >
+          <view class="switch-track"></view>
+          <view class="switch-thumb">
+            <text class="thumb-letter">
+              {{(currentPlayer === 1 ? personality1[item.key] : personality2[item.key]) ? item.checked : item.unchecked}}
+            </text>
+          </view>
+        </view>
+        <text class="switch-label-r {{(currentPlayer === 1 ? personality1[item.key] : personality2[item.key]) ? 'active' : ''}}">
+          {{item.labelR}}
+        </text>
+      </view>
+    </view>
+
+    <!-- 网格选择模式 -->
+    <view class="grid-section" wx:if="{{selectMethod === 'grid'}}">
+      <view class="grid-group" wx:for="{{typeGroups}}" wx:key="key">
+        <view class="grid-group-label" style="color: {{item.color}};">
+          <view class="grid-group-dot" style="background: {{item.color}};"></view>
+          {{item.name}}
+        </view>
+        <view class="grid-types">
+          <view
+            class="grid-type-btn {{(currentPlayer === 1 ? type1 : type2) === type.code ? 'selected' : ''}}"
+            wx:for="{{item.types}}"
+            wx:for-item="type"
+            wx:key="code"
+            data-code="{{type.code}}"
+            bindtap="onGridSelect"
+            style="{{(currentPlayer === 1 ? type1 : type2) === type.code ? 'border-color: ' + item.color + '; background: ' + item.bgColor : ''}}"
+          >
+            <image class="grid-type-img" src="{{type.image}}" mode="aspectFit" />
+            <text class="grid-type-code" style="{{(currentPlayer === 1 ? type1 : type2) === type.code ? 'color: ' + item.color : ''}}">{{type.code}}</text>
+            <text class="grid-type-name">{{type.name}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 八维认知功能展示 -->
+    <view class="functions-card" wx:if="{{eightFunctions.length > 0}}">
+      <text class="card-title">八维认知功能栈</text>
+      <view class="functions-list">
+        <view
+          class="fn-item {{item.isShadow ? 'shadow' : ''}}"
+          wx:for="{{eightFunctions}}"
+          wx:key="code"
+        >
+          <view class="fn-position" style="background: {{item.posColor}};">
+            <text class="fn-pos-num">{{item.position}}</text>
+          </view>
+          <view class="fn-main">
+            <view class="fn-header">
+              <text class="fn-code" style="color: {{item.fnColor}};">{{item.code}}</text>
+              <text class="fn-name">{{item.name}}</text>
+            </view>
+            <text class="fn-pos-label">{{item.posName}}</text>
+          </view>
+          <view class="fn-bar-wrap">
+            <view class="fn-bar" style="width: {{(8 - index) * 12.5}}%; background: {{item.fnColor}};"></view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 操作按钮 -->
+    <view class="action-area">
+      <button class="btn-back-player" wx:if="{{currentPlayer === 2}}" bindtap="goBackPlayer1">
+        ← 返回修改我的类型
+      </button>
+      <button class="btn-confirm" bindtap="onConfirm">
+        {{mode === 'single' ? '生成我的人格名片 →' : (currentPlayer === 1 ? '确认，选择TA的类型 →' : '查看关系分析 →')}}
+      </button>
+    </view>
+  </view>
+</view>

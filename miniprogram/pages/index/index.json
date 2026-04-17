@@ -1,0 +1,8 @@
+{
+  "usingComponents": {
+    "profile-modal": "/components/profile-modal/profile-modal"
+  },
+  "navigationStyle": "custom",
+  "enableShareAppMessage": true,
+  "enableShareTimeline": true
+}

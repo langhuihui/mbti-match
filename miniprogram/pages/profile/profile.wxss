@@ -1,0 +1,602 @@
+/* 个人中心页样式 */
+.page {
+  min-height: 100vh;
+  background: var(--bg);
+}
+
+.custom-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: linear-gradient(180deg, #1e1b4b 0%, rgba(30, 27, 75, 0.9) 60%, rgba(30, 27, 75, 0) 100%);
+}
+
+.nav-content {
+  display: flex;
+  align-items: center;
+  padding: 0 32rpx;
+}
+
+.nav-back {
+  width: 64rpx;
+  height: 64rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.nav-back-icon {
+  width: 18rpx;
+  height: 18rpx;
+  border-left: 4rpx solid #fff;
+  border-bottom: 4rpx solid #fff;
+  transform: rotate(45deg);
+  margin-left: 6rpx;
+}
+
+.nav-title {
+  flex: 1;
+  text-align: center;
+  font-size: 34rpx;
+  font-weight: 600;
+  color: #fff;
+  margin-right: 64rpx;
+}
+
+.content {
+  padding: 0 32rpx 120rpx;
+}
+
+/* ====== 用户卡片 ====== */
+.profile-card {
+  background: linear-gradient(145deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%);
+  border-radius: 32rpx;
+  padding: 40rpx;
+  box-shadow: 0 12rpx 48rpx rgba(30, 27, 75, 0.3);
+}
+
+.profile-main {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  margin-bottom: 32rpx;
+}
+
+.profile-avatar {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  border: 4rpx solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+}
+
+.profile-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.profile-name {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #fff;
+}
+
+.profile-name.placeholder {
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 400;
+  font-size: 28rpx;
+}
+
+.profile-type-row {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.profile-type-badge {
+  padding: 4rpx 16rpx;
+  border-radius: 100rpx;
+}
+
+.profile-type-text {
+  font-size: 22rpx;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 2rpx;
+}
+
+.profile-type-name {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.profile-test-hint {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.profile-edit {
+  width: 32rpx;
+  height: 32rpx;
+  flex-shrink: 0;
+}
+
+.icon-edit {
+  width: 32rpx;
+  height: 32rpx;
+  border: 3rpx solid rgba(255, 255, 255, 0.6);
+  border-radius: 6rpx;
+  position: relative;
+}
+
+.icon-edit::after {
+  content: '';
+  position: absolute;
+  top: 4rpx;
+  left: 4rpx;
+  right: 4rpx;
+  height: 3rpx;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+/* 统计数据 */
+.profile-stats {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 20rpx;
+  padding: 24rpx 0;
+}
+
+.stat-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4rpx;
+}
+
+.stat-num {
+  font-size: 40rpx;
+  font-weight: 800;
+  color: #fff;
+}
+
+.stat-label {
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.stat-divider {
+  width: 2rpx;
+  height: 48rpx;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* ====== 快捷操作 ====== */
+.quick-actions {
+  display: flex;
+  gap: 20rpx;
+  margin-top: 32rpx;
+}
+
+.quick-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+  padding: 28rpx 16rpx;
+  background: #fff;
+  border-radius: 20rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.04);
+}
+
+.share-btn {
+  border: none;
+  line-height: normal;
+  margin: 0;
+  font-size: inherit;
+}
+
+.share-btn::after {
+  border: none;
+}
+
+.quick-icon {
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: 12rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-q-card {
+  border: 3rpx solid var(--primary);
+  position: relative;
+}
+
+.icon-q-card::after {
+  content: '';
+  width: 60%;
+  height: 3rpx;
+  background: var(--primary);
+}
+
+.icon-q-match {
+  position: relative;
+}
+
+.icon-q-match::before {
+  content: '';
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  background: var(--primary);
+}
+
+.icon-q-match::after {
+  content: '';
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  background: rgba(99, 102, 241, 0.3);
+  margin-left: -4rpx;
+}
+
+.icon-q-share {
+  border: 3rpx solid var(--primary);
+  border-radius: 50%;
+  position: relative;
+}
+
+.icon-q-share::after {
+  content: '';
+  width: 0;
+  height: 0;
+  border-left: 6rpx solid transparent;
+  border-right: 6rpx solid transparent;
+  border-bottom: 10rpx solid var(--primary);
+}
+
+.quick-text {
+  font-size: 24rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* ====== Tab 栏 ====== */
+.tab-bar {
+  display: flex;
+  margin-top: 40rpx;
+  border-bottom: 2rpx solid var(--border);
+}
+
+.tab-item {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  padding: 24rpx 0;
+  position: relative;
+}
+
+.tab-item.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60rpx;
+  height: 6rpx;
+  background: var(--primary);
+  border-radius: 3rpx;
+}
+
+.tab-text {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--text-tertiary);
+}
+
+.tab-item.active .tab-text {
+  color: var(--text-primary);
+}
+
+.tab-count {
+  font-size: 20rpx;
+  font-weight: 700;
+  color: #fff;
+  background: var(--primary);
+  padding: 2rpx 12rpx;
+  border-radius: 100rpx;
+  min-width: 32rpx;
+  text-align: center;
+}
+
+/* ====== 列表区域 ====== */
+.list-section {
+  margin-top: 24rpx;
+}
+
+/* 匹配记录卡片 */
+.record-card {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  padding: 28rpx 24rpx;
+  background: #fff;
+  border-radius: 20rpx;
+  margin-bottom: 16rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+}
+
+.record-avatars {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.record-avatar {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 50%;
+  border: 3rpx solid #fff;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.08);
+}
+
+.record-avatar + .record-avatar {
+  margin-left: -12rpx;
+}
+
+.record-vs-icon {
+  font-size: 20rpx;
+  margin: 0 2rpx;
+  z-index: 1;
+}
+
+.record-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.record-types {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.record-type {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.record-x {
+  font-size: 22rpx;
+  color: var(--text-tertiary);
+}
+
+.record-relation {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-top: 4rpx;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.record-meta {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-top: 4rpx;
+}
+
+.record-friend {
+  font-size: 22rpx;
+  color: var(--text-secondary);
+}
+
+.record-date {
+  font-size: 22rpx;
+  color: var(--text-tertiary);
+}
+
+.record-delete,
+.friend-delete {
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #fef2f2;
+  flex-shrink: 0;
+}
+
+.delete-icon {
+  font-size: 28rpx;
+  color: #ef4444;
+  font-weight: 700;
+}
+
+/* 好友卡片 */
+.friend-card {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  padding: 28rpx 24rpx;
+  background: #fff;
+  border-radius: 20rpx;
+  margin-bottom: 16rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+}
+
+.friend-avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  border: 3rpx solid #f1f5f9;
+  background: #f8fafc;
+  flex-shrink: 0;
+}
+
+.friend-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+
+.friend-name {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.friend-type-row {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.friend-type-badge {
+  padding: 2rpx 12rpx;
+  border-radius: 100rpx;
+}
+
+.friend-type-text {
+  font-size: 20rpx;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 1rpx;
+}
+
+.friend-type-name {
+  font-size: 22rpx;
+  color: var(--text-secondary);
+}
+
+.friend-date {
+  font-size: 20rpx;
+  color: var(--text-tertiary);
+}
+
+/* ====== 空状态 ====== */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 80rpx 0;
+}
+
+.empty-icon {
+  width: 80rpx;
+  height: 80rpx;
+  margin-bottom: 20rpx;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 空信件图标 */
+.icon-empty-mail {
+  border: 3rpx solid var(--text-tertiary);
+  border-radius: 12rpx;
+}
+
+.icon-empty-mail::before {
+  content: '';
+  position: absolute;
+  top: 16rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 20rpx solid transparent;
+  border-right: 20rpx solid transparent;
+  border-top: 16rpx solid var(--text-tertiary);
+}
+
+/* 空好友图标 */
+.icon-empty-friends {
+  position: relative;
+}
+
+.icon-empty-friends::before {
+  content: '';
+  position: absolute;
+  top: 10rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24rpx;
+  height: 24rpx;
+  border-radius: 50%;
+  border: 3rpx solid var(--text-tertiary);
+}
+
+.icon-empty-friends::after {
+  content: '';
+  position: absolute;
+  bottom: 6rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 44rpx;
+  height: 20rpx;
+  border-radius: 24rpx 24rpx 0 0;
+  border: 3rpx solid var(--text-tertiary);
+  border-bottom: none;
+}
+
+.empty-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8rpx;
+}
+
+.empty-desc {
+  font-size: 26rpx;
+  color: var(--text-tertiary);
+  margin-bottom: 32rpx;
+}
+
+.empty-btn {
+  padding: 16rpx 48rpx;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: #fff;
+  font-size: 28rpx;
+  font-weight: 600;
+  border-radius: 100rpx;
+  border: none;
+  box-shadow: 0 6rpx 24rpx rgba(99, 102, 241, 0.3);
+}
+
+.empty-btn::after {
+  border: none;
+}
+
+/* ====== 底部操作 ====== */
+.bottom-actions {
+  padding: 40rpx 0;
+  text-align: center;
+}
+
+.clear-btn {
+  font-size: 26rpx;
+  color: var(--text-tertiary);
+  text-decoration: underline;
+}
