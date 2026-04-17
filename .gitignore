@@ -36,4 +36,8 @@ Thumbs.db
 
 # Lock files (use pnpm-lock.yaml, ignore npm's)
 package-lock.json
+
+# WeChat Mini Program
+project.config.json
+project.private.config.json
 docs
