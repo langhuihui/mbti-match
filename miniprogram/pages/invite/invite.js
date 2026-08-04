@@ -1,5 +1,7 @@
 const app = getApp()
 const { MBTI_TYPES, MBTI_GROUPS } = require('../../utils/constants')
+const analytics = require('../../utils/analytics')
+const { pickShareVariant, buildInviteShare, buildCopyText } = require('../../utils/inviteShare')
 
 Page({
   data: {
@@ -13,6 +15,7 @@ Page({
     hasUserInfo: false,
     // 邀请信息
     inviteCode: '',
+    shareVariant: 'curious',
     copied: false,
     // 流程步骤
     steps: [
@@ -32,6 +35,7 @@ Page({
 
     // 生成邀请码
     const inviteCode = app.generateInviteCode(type)
+    const shareVariant = pickShareVariant(inviteCode.length)
 
     this.setData({
       statusBarHeight: app.globalData.statusBarHeight,
@@ -41,20 +45,33 @@ Page({
       myGroupInfo: groupInfo,
       userInfo,
       hasUserInfo,
-      inviteCode
+      inviteCode,
+      shareVariant
     })
 
     // 保存到全局
     app.globalData.myType = type
     app.globalData.inviteCode = inviteCode
     app.saveMyMBTI(type)
+
+    analytics.track(analytics.EVENTS.INVITE_SENT, {
+      type,
+      inviteCode,
+      shareVariant
+    })
+    analytics.trackPageView('invite', { type })
   },
 
   // 复制邀请信息
   copyInvite() {
     const { myType, myTypeInfo, inviteCode, userInfo } = this.data
-    const nickname = userInfo ? userInfo.nickname : '我'
-    const text = `${nickname}是 ${myType}（${myTypeInfo.name}），来测测我们的MBTI关系吧！打开小程序输入邀请码：${inviteCode}`
+    const nickname = userInfo ? userInfo.nickname : ''
+    const text = buildCopyText({
+      nickname,
+      myType,
+      typeName: myTypeInfo.name,
+      inviteCode
+    })
 
     wx.setClipboardData({
       data: text,
@@ -70,22 +87,31 @@ Page({
   },
 
   onShareAppMessage() {
-    const { myType, myTypeInfo, inviteCode, userInfo, hasUserInfo } = this.data
+    const { myType, myTypeInfo, inviteCode, userInfo, hasUserInfo, shareVariant } = this.data
     const nickname = hasUserInfo ? userInfo.nickname : ''
     const avatarUrl = hasUserInfo ? userInfo.avatarUrl : ''
-    
-    // 分享链接中携带用户信息（base64编码昵称以避免特殊字符问题）
-    let sharePath = `/pages/match/match?code=${inviteCode}&type=${myType}`
-    if (nickname) {
-      sharePath += `&nickname=${encodeURIComponent(nickname)}`
-    }
+
+    const share = buildInviteShare({
+      nickname,
+      myType,
+      typeName: myTypeInfo.name,
+      inviteCode,
+      variant: shareVariant
+    })
+
+    let path = share.path
     if (avatarUrl) {
-      sharePath += `&avatar=${encodeURIComponent(avatarUrl)}`
+      path += `&avatar=${encodeURIComponent(avatarUrl)}`
     }
-    
+
+    analytics.track(analytics.EVENTS.SHARE, {
+      page: 'invite',
+      variant: share.variant
+    })
+
     return {
-      title: `${nickname ? nickname + '是' : '我是'} ${myType}（${myTypeInfo.name}），来测测我们是什么关系？`,
-      path: sharePath,
+      title: share.title,
+      path,
       withShareTicket: true
     }
   },

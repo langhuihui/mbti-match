@@ -320,13 +320,15 @@
 .btn-share {
   display: flex;
   align-items: center;
-  padding: 28rpx 36rpx;
+  width: 100%;
+  padding: 32rpx 40rpx;
   background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
   border-radius: 24rpx;
   border: none;
   box-shadow: 0 8rpx 32rpx rgba(99, 102, 241, 0.35);
   text-align: left;
   line-height: 1.4;
+  box-sizing: border-box;
 }
 
 .btn-share::after {
@@ -360,12 +362,15 @@
 .btn-share-text-group {
   display: flex;
   flex-direction: column;
+  flex: 1;
+  min-width: 0;
 }
 
 .btn-share-main {
   font-size: 32rpx;
   font-weight: 700;
   color: #fff;
+  white-space: nowrap;
 }
 
 .btn-share-sub {

@@ -1,6 +1,8 @@
 const app = getApp()
 const { MBTI_TYPES, COGNITIVE_FUNCTIONS, FUNCTION_POSITIONS, RELATIONSHIP_TYPES, COLLISION_TYPES } = require('../../utils/constants')
 const { getMbtiRelation } = require('../../utils/mbtiRelations')
+const { buildResultBrief } = require('../../utils/relationSummary')
+const analytics = require('../../utils/analytics')
 
 Page({
   data: {
@@ -19,7 +21,10 @@ Page({
     collisions: [],
     collisionSummary: { resonance: 0, complement: 0, clash: 0, weave: 0 },
     // 功能对比
-    functionPairs: []
+    functionPairs: [],
+    // 人话摘要
+    brief: null,
+    showDeep: false
   },
 
   onLoad(options) {
@@ -35,6 +40,7 @@ Page({
     })
 
     this.analyzeRelation(type1, type2)
+    analytics.trackPageView('result', { type1, type2 })
   },
 
   analyzeRelation(type1, type2) {
@@ -130,12 +136,16 @@ Page({
       stars.push({ filled: i < relation.level })
     }
 
+    const brief = buildResultBrief(type1, type2, forward, relation)
+
     this.setData({
       type1,
       type2,
       type1Info,
       type2Info,
       relation: { ...relation, stars },
+      brief,
+      showDeep: false,
       isSymmetric,
       forwardRelation: forward,
       backwardRelation: backward,
@@ -143,6 +153,10 @@ Page({
       collisionSummary: summary,
       functionPairs
     })
+  },
+
+  toggleDeep() {
+    this.setData({ showDeep: !this.data.showDeep })
   },
 
   // 查看名片

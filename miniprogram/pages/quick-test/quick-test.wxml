@@ -1,0 +1,62 @@
+<view class="page">
+  <view class="custom-nav" style="padding-top: {{statusBarHeight}}px;">
+    <view class="nav-content" style="height: {{headerHeight - statusBarHeight}}px;">
+      <view class="nav-back" bindtap="goBack">
+        <view class="nav-back-icon"></view>
+      </view>
+      <text class="nav-title">{{step === 'quiz' ? '快速测试' : '测试结果'}}</text>
+    </view>
+  </view>
+
+  <view class="content" style="padding-top: {{headerHeight + 16}}px;">
+    <!-- 答题阶段 -->
+    <block wx:if="{{step === 'quiz'}}">
+      <view class="progress-bar">
+        <view class="progress-fill" style="width: {{progress}}%;"></view>
+      </view>
+      <text class="progress-text">第 {{currentIndex + 1}} / {{total}} 题 · 约 60 秒</text>
+
+      <view class="question-card">
+        <text class="question-text">{{questions[currentIndex].text}}</text>
+        <view class="options">
+          <view
+            class="option-btn {{selectedKey === item.key ? 'selected' : ''}}"
+            wx:for="{{questions[currentIndex].options}}"
+            wx:key="key"
+            data-key="{{item.key}}"
+            bindtap="onSelectOption"
+          >
+            <text class="option-label">{{item.label}}</text>
+          </view>
+        </view>
+      </view>
+
+      <text class="hint-text">没有标准答案，选最符合你日常状态的选项</text>
+    </block>
+
+    <!-- 结果阶段 -->
+    <block wx:if="{{step === 'result' && resultInfo}}">
+      <view class="result-card">
+        <image class="result-avatar" src="{{resultInfo.image}}" mode="aspectFit" />
+        <text class="result-type">{{resultType}}</text>
+        <text class="result-name">{{resultInfo.name}}</text>
+        <view class="result-badge" wx:if="{{resultGroup}}" style="background: {{resultGroup.color}};">
+          <text>{{resultGroup.name}}</text>
+        </view>
+        <text class="result-motto">"{{resultInfo.motto}}"</text>
+        <view class="quick-tag">
+          <text>快测版 · 置信度 {{confidence}}%</text>
+        </view>
+        <text class="result-tip">结果基于 12 题快测，可在「探索人格」中手动调整类型</text>
+      </view>
+
+      <view class="action-area">
+        <button class="btn-primary" bindtap="goMatch">
+          {{from === 'match' ? '返回揭晓关系 →' : '邀请好友测关系 →'}}
+        </button>
+        <button class="btn-secondary" bindtap="goCard">生成人格名片</button>
+        <button class="btn-text" bindtap="retake">重新测试</button>
+      </view>
+    </block>
+  </view>
+</view>

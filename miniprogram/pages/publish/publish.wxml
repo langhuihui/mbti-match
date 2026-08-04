@@ -1,0 +1,143 @@
+<view class="page">
+  <!-- 自定义导航栏 -->
+  <view class="custom-nav" style="padding-top: {{statusBarHeight}}px;">
+    <view class="nav-content" style="height: {{headerHeight - statusBarHeight}}px;">
+      <text class="nav-title">发布笔记</text>
+      <view class="nav-publish {{content.length >= 10 ? 'active' : ''}}" bindtap="onPublish">
+        <text class="publish-text">{{publishing ? '发布中...' : '发布'}}</text>
+      </view>
+    </view>
+  </view>
+
+  <scroll-view class="content" scroll-y style="padding-top: {{headerHeight}}px;">
+    <!-- 标题输入 -->
+    <view class="form-section">
+      <view class="input-header">
+        <text class="input-label">标题</text>
+        <text class="input-count {{titleCount > maxTitle ? 'over' : ''}}">{{titleCount}}/{{maxTitle}}</text>
+      </view>
+      <input
+        class="title-input"
+        placeholder="给笔记起个标题（可选）"
+        value="{{title}}"
+        maxlength="{{maxTitle}}"
+        bindinput="onTitleInput"
+      />
+    </view>
+
+    <!-- 内容输入 -->
+    <view class="form-section">
+      <view class="input-header">
+        <text class="input-label">内容 <text class="required">*</text></text>
+        <text class="input-count {{contentCount > maxContent ? 'over' : ''}}">{{contentCount}}/{{maxContent}}</text>
+      </view>
+      <textarea
+        class="content-input"
+        placeholder="分享你的人格洞察、MBTI日常、关系心得..."
+        value="{{content}}"
+        maxlength="{{maxContent}}"
+        bindinput="onContentInput"
+        auto-height
+        show-confirm-bar="{{false}}"
+      />
+    </view>
+
+    <!-- 图片上传 -->
+    <view class="form-section">
+      <text class="input-label">图片</text>
+      <view class="image-grid">
+        <view class="image-item" wx:for="{{images}}" wx:key="*this">
+          <image class="upload-preview" src="{{item}}" mode="aspectFill" data-src="{{item}}" bindtap="previewImage" />
+          <view class="image-delete" data-index="{{index}}" catchtap="removeImage">
+            <text class="delete-x">×</text>
+          </view>
+        </view>
+        <view class="image-add" wx:if="{{images.length < 9}}" bindtap="chooseImage">
+          <view class="add-icon">+</view>
+          <text class="add-text">{{images.length}}/9</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 话题选择 -->
+    <view class="form-section">
+      <text class="input-label">话题分类</text>
+      <view class="topic-grid">
+        <view
+          class="topic-chip {{selectedTopic === item.key ? 'active' : ''}}"
+          wx:for="{{topics}}"
+          wx:key="key"
+          data-key="{{item.key}}"
+          bindtap="onTopicSelect"
+        >
+          <text class="topic-chip-icon">{{item.icon}}</text>
+          <text class="topic-chip-name">{{item.name}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 标签选择 -->
+    <view class="form-section">
+      <view class="input-header">
+        <text class="input-label">标签</text>
+        <text class="input-hint">最多5个</text>
+      </view>
+
+      <!-- MBTI相关标签（基于用户类型） -->
+      <view class="tag-group" wx:if="{{mbtiTags.length > 0}}">
+        <text class="tag-group-label">我的MBTI</text>
+        <view class="tag-list">
+          <view
+            class="tag-chip {{selectedTags.indexOf(tag) >= 0 ? 'active' : ''}}"
+            wx:for="{{mbtiTags}}"
+            wx:for-item="tag"
+            wx:key="*this"
+            data-tag="{{tag}}"
+            bindtap="onTagToggle"
+          >
+            <text class="tag-chip-text">#{{tag}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 通用标签 -->
+      <view class="tag-group">
+        <text class="tag-group-label">常用标签</text>
+        <view class="tag-list">
+          <view
+            class="tag-chip {{selectedTags.indexOf(tag) >= 0 ? 'active' : ''}}"
+            wx:for="{{commonTags}}"
+            wx:for-item="tag"
+            wx:key="*this"
+            data-tag="{{tag}}"
+            bindtap="onTagToggle"
+          >
+            <text class="tag-chip-text">#{{tag}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 自定义标签 -->
+      <view class="custom-tag-area">
+        <input
+          class="custom-tag-input"
+          placeholder="自定义标签"
+          value="{{customTagInput}}"
+          maxlength="10"
+          bindinput="onCustomTagInput"
+          bindconfirm="addCustomTag"
+        />
+        <button class="custom-tag-btn" bindtap="addCustomTag">添加</button>
+      </view>
+
+      <!-- 已选标签预览 -->
+      <view class="selected-tags" wx:if="{{selectedTags.length > 0}}">
+        <text class="selected-label">已选：</text>
+        <text class="selected-tag" wx:for="{{selectedTags}}" wx:for-item="tag" wx:key="*this">#{{tag}}</text>
+      </view>
+    </view>
+
+    <!-- 底部占位 -->
+    <view style="height: 120rpx;"></view>
+  </scroll-view>
+</view>

@@ -194,6 +194,19 @@
   margin-bottom: 20rpx;
 }
 
+.radar-wrap {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24rpx;
+}
+
+.radar-canvas {
+  width: 420rpx;
+  height: 420rpx;
+}
+
 .card-fn-list {
   display: flex;
   flex-direction: column;
@@ -401,40 +414,4 @@
 .btn-share-card::after,
 .btn-invite::after {
   border: none;
-}
-
-/* ====== 头像编辑提示 ====== */
-.card-user-avatar-wrap {
-  position: relative;
-  width: 100rpx;
-  height: 100rpx;
-  margin-bottom: 12rpx;
-}
-
-.card-user-avatar-wrap .card-user-avatar {
-  margin-bottom: 0;
-}
-
-.avatar-edit-hint {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 36rpx;
-  background: rgba(0, 0, 0, 0.5);
-  border-radius: 0 0 50rpx 50rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.hint-text {
-  font-size: 18rpx;
-  color: #fff;
-}
-
-.card-user-name.placeholder {
-  color: rgba(255, 255, 255, 0.5);
-  font-weight: 400;
-  font-size: 24rpx;
 }

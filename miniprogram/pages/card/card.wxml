@@ -16,15 +16,9 @@
       <text class="card-brand">MBTI Match · 人格名片</text>
 
       <!-- 用户头像昵称 -->
-      <view class="card-user-area" wx:if="{{isMyCard}}">
-        <view class="card-user-avatar-wrap" bindtap="{{hasUserInfo ? '' : 'showProfileSetup'}}">
-          <image class="card-user-avatar" src="{{hasUserInfo ? userInfo.avatarUrl : '/images/default-avatar.svg'}}" mode="aspectFill" />
-          <view class="avatar-edit-hint" wx:if="{{!hasUserInfo}}">
-            <text class="hint-text">点击设置</text>
-          </view>
-        </view>
-        <text class="card-user-name" wx:if="{{hasUserInfo}}">{{userInfo.nickname}}</text>
-        <text class="card-user-name placeholder" wx:else bindtap="showProfileSetup">点击设置昵称</text>
+      <view class="card-user-area" wx:if="{{isMyCard}}" bindtap="showProfileSetup">
+        <image class="card-user-avatar" src="{{userInfo.avatarUrl}}" mode="aspectFill" />
+        <text class="card-user-name">{{userInfo.nickname}}</text>
       </view>
 
       <!-- 类型信息 -->
@@ -48,6 +42,16 @@
       <!-- 八维功能 -->
       <view class="card-functions">
         <text class="card-fn-title">八维认知功能</text>
+
+        <!-- 雷达图 -->
+        <view class="radar-wrap">
+          <canvas
+            type="2d"
+            id="radarCanvas"
+            class="radar-canvas"
+          ></canvas>
+        </view>
+
         <view class="card-fn-list">
           <view class="card-fn-item {{item.isShadow ? 'shadow' : ''}}" wx:for="{{eightFunctions}}" wx:key="code">
             <view class="card-fn-left">
@@ -111,8 +115,8 @@
   <!-- 头像昵称设置弹窗 -->
   <profile-modal 
     show="{{showProfileModal}}" 
-    initial-avatar="{{userInfo.avatarUrl}}"
-    initial-nickname="{{userInfo.nickname}}"
+    initial-avatar="{{userInfo.avatarUrl || ''}}"
+    initial-nickname="{{userInfo.nickname || ''}}"
     bind:confirm="onProfileConfirm" 
     bind:cancel="hideProfileModal" 
   />

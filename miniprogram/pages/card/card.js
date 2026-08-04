@@ -79,6 +79,11 @@ Page({
   changeTheme(e) {
     const { key } = e.currentTarget.dataset
     this.setData({ currentTheme: key })
+    // 主题切换后 canvas 名片需要重绘，雷达图色板相对独立，顺手刷新一次
+    setTimeout(() => {
+      this.drawCard()
+      this.drawRadar()
+    }, 100)
   },
 
   // Canvas 绘制名片（含用户头像昵称）
@@ -132,8 +137,8 @@ Page({
 
         let contentStartY = 70
 
-        // 如果是自己的名片，始终绘制头像区域
-        if (isMyCard) {
+        // 自己的名片：始终绘制头像和昵称
+        if (isMyCard && userInfo) {
           try {
             const avatarSize = 100
             const avatarX = width / 2 - avatarSize / 2
@@ -149,36 +154,25 @@ Page({
             ctx.fill()
             ctx.restore()
 
-            if (hasUserInfo && userInfo && userInfo.avatarUrl) {
-              // 有头像：加载并绘制真实头像
-              try {
-                const avatarImg = await this.loadImage(canvas, userInfo.avatarUrl)
-                ctx.save()
-                ctx.beginPath()
-                ctx.arc(centerX, centerY, avatarSize / 2, 0, Math.PI * 2)
-                ctx.clip()
-                ctx.drawImage(avatarImg, avatarX, avatarY, avatarSize, avatarSize)
-                ctx.restore()
-              } catch (e) {
-                // 头像加载失败，画默认圆
-                this.drawDefaultAvatar(ctx, centerX, centerY, avatarSize / 2)
-              }
-
-              // 昵称
-              ctx.fillStyle = '#ffffff'
-              ctx.font = 'bold 30px -apple-system'
-              ctx.textAlign = 'center'
-              ctx.fillText(userInfo.nickname, centerX, avatarY + avatarSize + 40)
-            } else {
-              // 没有头像：画默认头像占位
+            // 绘制头像
+            try {
+              const avatarImg = await this.loadImage(canvas, userInfo.avatarUrl)
+              ctx.save()
+              ctx.beginPath()
+              ctx.arc(centerX, centerY, avatarSize / 2, 0, Math.PI * 2)
+              ctx.clip()
+              ctx.drawImage(avatarImg, avatarX, avatarY, avatarSize, avatarSize)
+              ctx.restore()
+            } catch (e) {
+              // 头像加载失败，画默认圆
               this.drawDefaultAvatar(ctx, centerX, centerY, avatarSize / 2)
-
-              // 显示提示文字
-              ctx.fillStyle = 'rgba(255,255,255,0.5)'
-              ctx.font = '26px -apple-system'
-              ctx.textAlign = 'center'
-              ctx.fillText('点击设置头像昵称', centerX, avatarY + avatarSize + 40)
             }
+
+            // 昵称
+            ctx.fillStyle = '#ffffff'
+            ctx.font = 'bold 30px -apple-system'
+            ctx.textAlign = 'center'
+            ctx.fillText(userInfo.nickname || '', centerX, avatarY + avatarSize + 40)
 
             contentStartY = avatarY + avatarSize + 70
           } catch (e) {
@@ -313,7 +307,34 @@ Page({
 
         this.canvas = canvas
         this.setData({ canvasReady: true })
+        // 异步生成分享封面图（5:4 常见比例，取名片的上半部分做裁切）
+        this._generateShareImage()
       })
+  },
+
+  // 为微信分享生成一张 5:4 封面图（裁切 canvas 上半部分）
+  _generateShareImage() {
+    if (!this.canvas) return
+    const srcW = this.canvas.width
+    // 5:4 裁切高度
+    const destH = Math.round(srcW * 4 / 5)
+    wx.canvasToTempFilePath({
+      canvas: this.canvas,
+      x: 0,
+      y: 0,
+      width: srcW,
+      height: destH,
+      destWidth: 500,
+      destHeight: 400,
+      fileType: 'jpg',
+      quality: 0.85,
+      success: (res) => {
+        this.shareImageUrl = res.tempFilePath
+      },
+      fail: () => {
+        // 忽略失败，分享时降级为页面截图
+      }
+    })
   },
 
   // 绘制默认头像（简洁的用户轮廓图标）
@@ -444,7 +465,10 @@ Page({
     })
 
     // 重新绘制名片（更新头像）
-    setTimeout(() => this.drawCard(), 300)
+    setTimeout(() => {
+      this.drawCard()
+      this.drawRadar()
+    }, 300)
 
     wx.showToast({ title: '设置成功', icon: 'none' })
   },
@@ -452,15 +476,145 @@ Page({
   onShareAppMessage() {
     const { type, typeInfo, userInfo, isMyCard } = this.data
     const nickname = isMyCard && userInfo ? userInfo.nickname : ''
-    
-    return {
-      title: `${nickname ? nickname + '是' : '我是'} ${type}（${typeInfo.name}）！来看看你是什么类型？`,
-      path: '/pages/test/test?mode=single',
+    const avatarUrl = isMyCard && userInfo ? userInfo.avatarUrl : ''
+
+    // 若是自己的名片，走邀请匹配链路；否则走百科分享链路
+    let path = '/pages/index/index'
+    if (isMyCard && type) {
+      const inviteCode = app.generateInviteCode(type)
+      path = `/pages/match/match?code=${encodeURIComponent(inviteCode)}&type=${type}`
+      if (nickname) path += `&nickname=${encodeURIComponent(nickname)}`
+      if (avatarUrl) path += `&avatar=${encodeURIComponent(avatarUrl)}`
+    }
+
+    const share = {
+      title: `${nickname ? nickname + '是' : '我是'} ${type}（${typeInfo.name}）！来看看你们是什么关系？`,
+      path,
       withShareTicket: true
     }
+    if (this.shareImageUrl) {
+      share.imageUrl = this.shareImageUrl
+    }
+    return share
+  },
+
+  // ====== 雷达图（预览区八维展示） ======
+  RADAR_AXES: ['Ni', 'Ne', 'Si', 'Se', 'Ti', 'Te', 'Fi', 'Fe'],
+
+  drawRadar() {
+    const { eightFunctions } = this.data
+    if (!eightFunctions || eightFunctions.length === 0) return
+
+    const query = wx.createSelectorQuery()
+    query.select('#radarCanvas')
+      .fields({ node: true, size: true })
+      .exec((res) => {
+        if (!res || !res[0] || !res[0].node) return
+        const canvas = res[0].node
+        const ctx = canvas.getContext('2d')
+        const dpr = wx.getWindowInfo().pixelRatio || 2
+        const cssSize = res[0].width || 210
+        canvas.width = cssSize * dpr
+        canvas.height = cssSize * dpr
+        ctx.scale(dpr, dpr)
+
+        const cx = cssSize / 2
+        const cy = cssSize / 2
+        const radius = cssSize * 0.36
+        const axes = this.RADAR_AXES
+        const N = axes.length
+
+        // 强度查表：主功能(第1位)=1.0，阴影(第8位)=0.18
+        const strengthByCode = {}
+        eightFunctions.forEach((fn) => {
+          // 把 8~1 映射到 1.0~0.18
+          const pos = fn.position // 1-based
+          strengthByCode[fn.code] = 0.18 + (8 - pos) * (0.82 / 7)
+        })
+
+        const colorByCode = {}
+        eightFunctions.forEach((fn) => { colorByCode[fn.code] = fn.fnColor })
+
+        ctx.clearRect(0, 0, cssSize, cssSize)
+
+        // 背景同心多边形网格（4 层）
+        ctx.strokeStyle = 'rgba(255,255,255,0.15)'
+        ctx.lineWidth = 1
+        for (let layer = 1; layer <= 4; layer++) {
+          const r = (radius / 4) * layer
+          ctx.beginPath()
+          for (let i = 0; i < N; i++) {
+            const a = (Math.PI * 2 * i) / N - Math.PI / 2
+            const x = cx + Math.cos(a) * r
+            const y = cy + Math.sin(a) * r
+            if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y)
+          }
+          ctx.closePath()
+          ctx.stroke()
+        }
+
+        // 从圆心到每个顶点的轴线
+        ctx.strokeStyle = 'rgba(255,255,255,0.1)'
+        for (let i = 0; i < N; i++) {
+          const a = (Math.PI * 2 * i) / N - Math.PI / 2
+          ctx.beginPath()
+          ctx.moveTo(cx, cy)
+          ctx.lineTo(cx + Math.cos(a) * radius, cy + Math.sin(a) * radius)
+          ctx.stroke()
+        }
+
+        // 数据多边形
+        const points = axes.map((code, i) => {
+          const a = (Math.PI * 2 * i) / N - Math.PI / 2
+          const s = strengthByCode[code] || 0.2
+          const r = radius * s
+          return { x: cx + Math.cos(a) * r, y: cy + Math.sin(a) * r }
+        })
+
+        // 填充
+        const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius)
+        grad.addColorStop(0, 'rgba(255,255,255,0.45)')
+        grad.addColorStop(1, 'rgba(255,255,255,0.1)')
+        ctx.fillStyle = grad
+        ctx.beginPath()
+        points.forEach((p, i) => {
+          if (i === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y)
+        })
+        ctx.closePath()
+        ctx.fill()
+
+        // 描边
+        ctx.strokeStyle = 'rgba(255,255,255,0.85)'
+        ctx.lineWidth = 1.5
+        ctx.stroke()
+
+        // 数据点（用功能色）
+        points.forEach((p, i) => {
+          ctx.beginPath()
+          ctx.fillStyle = colorByCode[axes[i]] || '#ffffff'
+          ctx.arc(p.x, p.y, 3.2, 0, Math.PI * 2)
+          ctx.fill()
+        })
+
+        // 轴标签
+        ctx.font = 'bold 11px -apple-system, system-ui'
+        ctx.textAlign = 'center'
+        ctx.textBaseline = 'middle'
+        for (let i = 0; i < N; i++) {
+          const a = (Math.PI * 2 * i) / N - Math.PI / 2
+          const lr = radius + 14
+          const x = cx + Math.cos(a) * lr
+          const y = cy + Math.sin(a) * lr
+          ctx.fillStyle = colorByCode[axes[i]] || 'rgba(255,255,255,0.8)'
+          ctx.fillText(axes[i], x, y)
+        }
+      })
   },
 
   onReady() {
-    setTimeout(() => this.drawCard(), 300)
+    setTimeout(() => {
+      this.drawCard()
+      this.drawRadar()
+    }, 300)
   }
 })

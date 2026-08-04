@@ -1,0 +1,9 @@
+{
+  "name": "admin-api",
+  "version": "1.0.0",
+  "description": "MBTI Match 后台管理 API - HTTP 触发，校验 token，读写云数据库",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

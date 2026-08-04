@@ -107,6 +107,11 @@
         </view>
       </view>
 
+      <view class="quick-test-link" bindtap="goQuickTest">
+        <text class="quick-test-icon">?</text>
+        <text class="quick-test-text">不知道自己的类型？60 秒快速测试</text>
+      </view>
+
       <!-- 揭晓按钮 -->
       <view class="action-area">
         <button class="btn-reveal" bindtap="revealRelation">
@@ -119,11 +124,12 @@
     <!-- ====== 揭晓阶段 ====== -->
     <block wx:if="{{step === 'reveal'}}">
       <!-- 揭晓动画 -->
-      <view class="reveal-stage {{revealAnimation ? 'animate' : ''}}">
+      <view class="reveal-stage phase-{{revealPhase}} {{revealAnimation ? 'animate' : ''}}">
         <!-- 两人对比（带真实头像） -->
         <view class="reveal-vs">
-          <view class="reveal-person">
+          <view class="reveal-person side-left">
             <view class="reveal-avatar-wrap">
+              <view class="reveal-ring"></view>
               <image
                 class="reveal-avatar {{hasUserInfo ? 'real-avatar' : ''}}"
                 src="{{hasUserInfo ? userInfo.avatarUrl : myTypeInfo.image}}"
@@ -137,13 +143,22 @@
           </view>
 
           <view class="reveal-center">
-            <view class="reveal-pulse"></view>
-            <text class="reveal-emoji" wx:if="{{showResult}}">{{relation.emoji}}</text>
-            <text class="reveal-loading" wx:else>...</text>
+            <!-- 连接光束 -->
+            <view class="reveal-beam"></view>
+            <!-- 脉冲光晕三层 -->
+            <view class="reveal-pulse pulse-1"></view>
+            <view class="reveal-pulse pulse-2"></view>
+            <view class="reveal-pulse pulse-3"></view>
+            <!-- 中心芯 -->
+            <view class="reveal-core">
+              <text class="reveal-emoji" wx:if="{{showResult}}">{{relation.emoji}}</text>
+              <text class="reveal-loading" wx:else>...</text>
+            </view>
           </view>
 
-          <view class="reveal-person">
+          <view class="reveal-person side-right">
             <view class="reveal-avatar-wrap">
+              <view class="reveal-ring"></view>
               <image
                 class="reveal-avatar {{inviterAvatar ? 'real-avatar' : ''}}"
                 src="{{inviterAvatar || inviterInfo.image}}"
@@ -159,18 +174,29 @@
 
         <!-- 关系结果 -->
         <view class="reveal-result {{showResult ? 'show' : ''}}" wx:if="{{relation}}">
-          <view class="result-badge" style="background: {{relation.color}};">
-            <text class="result-emoji">{{relation.emoji}}</text>
-            <text class="result-name">{{relation.name}}</text>
+          <view class="result-badge-wrap {{revealPhase === 'shown' ? 'settled' : ''}}">
+            <view class="result-badge" style="background: {{relation.color}};">
+              <text class="result-emoji">{{relation.emoji}}</text>
+              <text class="result-name">{{relation.name}}</text>
+            </view>
           </view>
           <text class="result-subtitle">{{relation.subtitle}}</text>
 
           <!-- 星级 -->
           <view class="result-stars">
-            <text class="result-star {{item.filled ? 'filled' : ''}}" wx:for="{{relation.stars}}" wx:key="index">★</text>
+            <text
+              class="result-star {{index < starLit ? 'filled lit' : ''}}"
+              wx:for="{{relation.stars}}"
+              wx:key="index"
+            >★</text>
           </view>
 
           <text class="result-desc">{{relation.desc}}</text>
+          <view class="result-brief" wx:if="{{brief}}">
+            <text class="result-brief-label">一句话总结</text>
+            <text class="result-brief-text">{{brief.summary}}</text>
+            <text class="result-brief-tip">{{brief.tip}}</text>
+          </view>
           <text class="result-detail">{{relation.detail}}</text>
         </view>
       </view>
@@ -179,6 +205,9 @@
       <view class="action-area" wx:if="{{showResult}}">
         <button class="btn-detail" bindtap="viewDetail">
           <text>查看完整分析</text>
+        </button>
+        <button class="btn-poster" bindtap="generatePoster" loading="{{posterLoading}}">
+          <text>{{posterLoading ? '正在生成…' : '生成双人对比海报'}}</text>
         </button>
         <view class="btn-row">
           <button class="btn-sub" bindtap="goMyCard">
@@ -196,5 +225,45 @@
         </view>
       </view>
     </block>
+  </view>
+
+  <!-- 匹配后微记录弹层 -->
+  <view class="micro-mask {{showMicroModal ? 'show' : ''}}" wx:if="{{showMicroModal}}" catchtap="closeMicroModal">
+    <view class="micro-dialog" catchtap="">
+      <text class="micro-title">记录这次匹配</text>
+      <text class="micro-desc">用一句话留住此刻的感受，会出现在发现页「关系瞬间」</text>
+      <textarea
+        class="micro-input"
+        value="{{microContent}}"
+        maxlength="{{microMaxLength}}"
+        placeholder="说说你的感受…"
+        auto-focus="{{true}}"
+        bindinput="onMicroInput"
+      />
+      <text class="micro-count">{{microContent.length}}/{{microMaxLength}}</text>
+      <view class="micro-actions">
+        <button class="micro-btn skip" bindtap="closeMicroModal">跳过</button>
+        <button class="micro-btn submit" bindtap="submitMicroRecord" loading="{{microSubmitting}}">记录瞬间</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 离屏 Canvas：双人对比海报 -->
+  <canvas
+    type="2d"
+    id="posterCanvas"
+    class="poster-canvas-offscreen"
+  ></canvas>
+
+  <!-- 海报预览弹层 -->
+  <view class="poster-mask {{showPoster ? 'show' : ''}}" wx:if="{{showPoster}}" bindtap="closePoster">
+    <view class="poster-dialog" catchtap="">
+      <image class="poster-preview" src="{{posterUrl}}" mode="widthFix" show-menu-by-longpress="{{true}}" />
+      <view class="poster-actions">
+        <button class="poster-btn secondary" bindtap="closePoster">关闭</button>
+        <button class="poster-btn primary" bindtap="savePoster">保存到相册</button>
+      </view>
+      <text class="poster-tip">长按图片可快速转发</text>
+    </view>
   </view>
 </view>

@@ -1,0 +1,169 @@
+<!-- pages/chat-assessment/chat-assessment.wxml -->
+<view class="page">
+
+  <!-- 自定义导航栏 -->
+  <view class="custom-nav" style="padding-top: {{statusBarHeight}}px; height: {{navBarHeight + statusBarHeight}}px;">
+    <view class="nav-content" style="height: {{navBarHeight}}px;">
+      <view class="nav-back" bindtap="onBack">
+        <view class="nav-back-icon"></view>
+      </view>
+      <view class="nav-title">人格对话</view>
+      <view class="nav-actions-right">
+        <view
+          class="nav-action {{insightReady ? 'nav-action-ready' : ''}}"
+          bindtap="onEndChat"
+          wx:if="{{round >= 3 || insightReady}}"
+        >{{insightReady ? '生成报告' : '完成'}}</view>
+        <view class="nav-clear" bindtap="onClearChat" wx:if="{{messages.length > 1}}">
+          <view class="nav-clear-icon"></view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 占位 -->
+  <view style="height: {{navBarHeight + statusBarHeight}}px;"></view>
+
+  <!-- 心理危机顶部 banner -->
+  <view class="crisis-banner" wx:if="{{showCrisisBanner}}">
+    <view class="crisis-text">{{crisisResources}}</view>
+    <view class="crisis-actions">
+      <view class="crisis-btn" bindtap="onCopyCrisis">复制热线</view>
+      <view class="crisis-close" bindtap="onCloseCrisis">知道了</view>
+    </view>
+  </view>
+
+  <!-- 进度条 -->
+  <view class="progress-bar">
+    <view class="progress-info">
+      <text class="progress-label">对话进度</text>
+      <text class="progress-count">{{round}} / {{maxRounds}}</text>
+    </view>
+    <view class="progress-track">
+      <view class="progress-fill" style="width: {{round / maxRounds * 100}}%;"></view>
+    </view>
+
+    <!-- 信息掌握度（第 insightStartRound 轮后展示） -->
+    <view class="insight-section" wx:if="{{round >= insightStartRound}}">
+      <view class="progress-info">
+        <text class="progress-label">信息掌握度</text>
+        <text class="progress-count {{insightReady ? 'progress-count-ready' : ''}}">{{insightProgress}}%</text>
+      </view>
+      <view class="progress-track insight-track">
+        <view class="insight-fill {{insightReady ? 'insight-fill-ready' : ''}}" style="width: {{insightProgress}}%;"></view>
+      </view>
+      <view class="insight-meta" wx:if="{{insightJungleanTilt || insightEnneagramTilt}}">
+        <view class="insight-tag" wx:if="{{insightJungleanTilt}}">{{insightJungleanTilt}}</view>
+        <view class="insight-tag insight-tag-enneagram" wx:if="{{insightEnneagramTilt}}">{{insightEnneagramTilt}}</view>
+        <view class="insight-tag insight-tag-ready" wx:if="{{insightReady}}">可生成报告</view>
+      </view>
+      <view class="insight-suggestion" wx:if="{{insightSuggestion}}">{{insightSuggestion}}</view>
+    </view>
+
+    <!-- 前几轮提示：AI还不了解你 -->
+    <view class="early-hint" wx:if="{{round < insightStartRound && round > 0}}">
+      <text class="early-hint-text">AI 还不够了解你，继续聊聊吧（还需 {{insightStartRound - round}} 轮开始评估）</text>
+    </view>
+  </view>
+
+  <!-- 消息列表 -->
+  <scroll-view
+    class="message-list"
+    scroll-y
+    scroll-into-view="{{scrollToView}}"
+    scroll-top="{{scrollTop}}"
+    scroll-with-animation="{{false}}"
+    style="bottom: {{inputFocus ? keyboardHeight + 120 : 140}}rpx;"
+  >
+    <view class="message-item" wx:for="{{messages}}" wx:key="id" id="{{item.id}}">
+      <!-- AI 消息 -->
+      <view class="msg msg-ai" wx:if="{{item.role === 'ai'}}">
+        <view class="avatar avatar-ai">
+          <text class="avatar-text">AI</text>
+        </view>
+        <view class="bubble-wrap">
+          <view class="bubble bubble-ai">
+            <text class="bubble-text{{item.streaming ? ' streaming' : ''}}">{{item.content}}</text>
+            <view class="typing-cursor" wx:if="{{item.streaming}}"></view>
+          </view>
+          <!-- 当前轮掌握度小标签 -->
+          <view class="bubble-insight" wx:if="{{item.insight}}">
+            <text class="bubble-insight-progress">{{item.insight.progress}}%</text>
+            <text class="bubble-insight-tilt" wx:if="{{item.insight.jungleanTilt}}">{{item.insight.jungleanTilt}}</text>
+            <text class="bubble-insight-tilt bubble-insight-enneagram" wx:if="{{item.insight.enneagramTilt}}">{{item.insight.enneagramTilt}}</text>
+          </view>
+        </view>
+      </view>
+      <!-- 用户消息 -->
+      <view class="msg msg-user" wx:else>
+        <view class="bubble bubble-user">
+          <text class="bubble-text">{{item.content}}</text>
+        </view>
+        <view class="avatar avatar-user">
+          <text class="avatar-text">我</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 加载中提示 -->
+    <view class="msg msg-ai" wx:if="{{loading && !streamingMsg}}">
+      <view class="avatar avatar-ai">
+        <text class="avatar-text">AI</text>
+      </view>
+      <view class="bubble bubble-ai bubble-typing">
+        <view class="typing-dot"></view>
+        <view class="typing-dot"></view>
+        <view class="typing-dot"></view>
+      </view>
+    </view>
+
+    <!-- 分析中提示 -->
+    <view class="analyzing-tip" wx:if="{{analyzing}}">
+      <view class="analyzing-spinner"></view>
+      <text class="analyzing-text">正在综合分析你的对话...</text>
+    </view>
+
+    <!-- 话题引导卡片（仅前2轮显示） -->
+    <view class="topic-guide" wx:if="{{showTopicGuide && round <= 1}}">
+      <view class="guide-header">
+        <text class="guide-title">不知道聊什么？试试这些话题</text>
+      </view>
+      <view class="topic-list">
+        <view class="topic-item" wx:for="{{topicSuggestions}}" wx:key="*this" bindtap="onTopicTap" data-topic="{{item}}">
+          <text class="topic-text">{{item}}</text>
+          <view class="topic-arrow"></view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 底部留白 -->
+    <view class="list-bottom-pad"></view>
+  </scroll-view>
+
+  <!-- 输入区 -->
+  <view class="input-bar" style="bottom: {{inputFocus ? keyboardHeight : 0}}px;">
+    <view class="input-wrap">
+      <input
+        class="input-field"
+        type="text"
+        value="{{inputValue}}"
+        placeholder="{{inputPlaceholder}}"
+        placeholder-class="input-placeholder"
+        confirm-type="send"
+        bindinput="onInput"
+        bindfocus="onInputFocus"
+        bindblur="onInputBlur"
+        bindconfirm="onSend"
+        adjust-position="{{false}}"
+        disabled="{{loading || analyzing}}"
+      />
+    </view>
+    <view
+      class="send-btn {{(inputValue && !loading && !analyzing) ? 'send-btn-active' : ''}}"
+      bindtap="onSend"
+    >
+      <text class="send-text">发送</text>
+    </view>
+  </view>
+
+</view>

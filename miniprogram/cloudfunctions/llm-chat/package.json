@@ -1,0 +1,9 @@
+{
+  "name": "llm-chat",
+  "version": "1.0.0",
+  "description": "LLM 对话测定云函数，对接腾讯云 TokenHub（混元）",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

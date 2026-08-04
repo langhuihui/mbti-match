@@ -1,0 +1,119 @@
+<view class="page">
+  <view class="custom-nav" style="padding-top: {{statusBarHeight}}px;">
+    <view class="nav-content" style="height: {{headerHeight - statusBarHeight}}px;">
+      <view class="nav-back" bindtap="goBack">
+        <view class="nav-back-icon"></view>
+      </view>
+      <text class="nav-title">关系星图</text>
+    </view>
+  </view>
+
+  <view class="content" style="padding-top: {{headerHeight + 16}}px;">
+    <!-- 未设置类型 -->
+    <view class="empty-state" wx:if="{{!myType}}">
+      <text class="empty-emoji">🌌</text>
+      <text class="empty-title">先完成测试</text>
+      <text class="empty-desc">设置你的 MBTI 类型后，才能绘制关系星图</text>
+      <button class="empty-btn" bindtap="goTest">60 秒快速测试</button>
+    </view>
+
+    <!-- 有类型但无好友 -->
+    <view class="empty-state" wx:elif="{{!hasGraph}}">
+      <text class="empty-emoji">✨</text>
+      <text class="empty-title">星图还是空的</text>
+      <text class="empty-desc">邀请好友完成匹配，你的关系星图就会亮起来</text>
+      <button class="empty-btn" bindtap="goInvite">邀请好友匹配</button>
+    </view>
+
+    <block wx:else>
+      <!-- 统计摘要 -->
+      <view class="stats-card" wx:if="{{stats}}">
+        <view class="stat-block">
+          <text class="stat-num">{{stats.total}}</text>
+          <text class="stat-label">关系节点</text>
+        </view>
+        <view class="stat-block">
+          <text class="stat-num">{{stats.avgLevel}}</text>
+          <text class="stat-label">平均契合度</text>
+        </view>
+        <view class="stat-block" wx:if="{{stats.topRelation}}">
+          <text class="stat-num stat-text">{{stats.topRelation}}</text>
+          <text class="stat-label">最多关系</text>
+        </view>
+      </view>
+
+      <!-- 星图画布 -->
+      <view class="graph-card">
+        <view class="graph-canvas" style="height: {{graphSize}}rpx;">
+          <!-- 连线 -->
+          <view
+            class="graph-line"
+            wx:for="{{nodes}}"
+            wx:key="id"
+            style="width: {{item.lineLength}}%; transform: rotate({{item.lineAngle}}deg); background: {{item.relationColor}}40;"
+          ></view>
+
+          <!-- 中心：我 -->
+          <view class="graph-center">
+            <image
+              class="center-avatar"
+              src="{{userInfo.avatarUrl || myTypeInfo.image}}"
+              mode="aspectFill"
+            />
+            <view class="center-badge" style="background: {{myGroupInfo.color}};">
+              <text>{{myType}}</text>
+            </view>
+            <text class="center-label">我</text>
+          </view>
+
+          <!-- 好友节点 -->
+          <view
+            class="graph-node"
+            wx:for="{{nodes}}"
+            wx:key="id"
+            style="left: {{item.x}}%; top: {{item.y}}%;"
+            data-index="{{index}}"
+            bindtap="onNodeTap"
+          >
+            <view class="node-ring" style="border-color: {{item.relationColor}};">
+              <image
+                class="node-avatar"
+                src="{{item.avatarUrl || '/images/default-avatar.svg'}}"
+                mode="aspectFill"
+              />
+            </view>
+            <view class="node-relation" style="background: {{item.relationColor}};">
+              <text>{{item.relationEmoji}}</text>
+            </view>
+            <text class="node-name">{{item.nickname}}</text>
+            <text class="node-type">{{item.mbtiType}}</text>
+          </view>
+        </view>
+        <text class="graph-hint">点击节点查看详细关系分析</text>
+      </view>
+
+      <!-- 关系列表 -->
+      <view class="list-card">
+        <text class="list-title">关系一览</text>
+        <view
+          class="list-item"
+          wx:for="{{nodes}}"
+          wx:key="id"
+          data-index="{{index}}"
+          bindtap="onNodeTap"
+        >
+          <image class="list-avatar" src="{{item.avatarUrl || '/images/default-avatar.svg'}}" mode="aspectFill" />
+          <view class="list-info">
+            <text class="list-name">{{item.nickname}}</text>
+            <text class="list-types">{{myType}} × {{item.mbtiType}}</text>
+          </view>
+          <view class="list-relation" style="background: {{item.relationColor}}20; color: {{item.relationColor}};">
+            <text>{{item.relationEmoji}} {{item.relationName}}</text>
+          </view>
+        </view>
+      </view>
+
+      <button class="btn-invite" bindtap="goInvite">邀请更多好友点亮星图</button>
+    </block>
+  </view>
+</view>

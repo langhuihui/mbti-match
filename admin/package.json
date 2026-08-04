@@ -1,0 +1,30 @@
+{
+  "name": "mbti-match-admin",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "MBTI Match 后台管理系统 - 数据统计、测定记录查看、风险监控",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@cloudbase/js-sdk": "^2.32.0",
+    "@element-plus/icons-vue": "^2.3.1",
+    "axios": "^1.7.0",
+    "dayjs": "^1.11.13",
+    "echarts": "^5.5.0",
+    "element-plus": "^2.8.0",
+    "pinia": "^3.0.4",
+    "vue": "^3.5.26",
+    "vue-echarts": "^7.0.3",
+    "vue-router": "^4.2.5"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.3",
+    "unplugin-auto-import": "^0.18.0",
+    "unplugin-vue-components": "^0.27.0",
+    "vite": "^7.3.0"
+  }
+}

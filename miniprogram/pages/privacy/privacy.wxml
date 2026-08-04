@@ -1,0 +1,42 @@
+<view class="page">
+  <view class="hero">
+    <text class="title">MBTI Match 隐私保护指引</text>
+    <text class="subtitle">为了更好地保护你的权益，请仔细阅读以下内容</text>
+    <text class="update">更新时间：2026-04-20</text>
+  </view>
+
+  <view class="section">
+    <text class="h2">一、我们会收集哪些信息</text>
+    <text class="p">1. 你主动填写的头像、昵称，仅用于本地生成人格名片和匹配展示，不上传至服务器（Phase 0 未接入云端）。</text>
+    <text class="p">2. 你的 MBTI 类型、匹配历史、好友列表，均保存在本机（wx.storage），你可随时在「我的 · 清除数据」中删除。</text>
+    <text class="p">3. 分享链接中仅携带你授权展示给好友的昵称、头像 URL 与邀请码，不会携带额外信息。</text>
+  </view>
+
+  <view class="section">
+    <text class="h2">二、我们会使用哪些微信能力</text>
+    <text class="p">· 保存到相册（wx.saveImageToPhotosAlbum）：用于将你的人格名片存入相册。</text>
+    <text class="p">· 剪贴板读取（wx.getClipboardData）：当你选择"粘贴邀请码"时读取一次剪贴板内容，不会在后台读取。</text>
+    <text class="p">· 分享能力（onShareAppMessage）：仅在你点击分享按钮时触发。</text>
+  </view>
+
+  <view class="section">
+    <text class="h2">三、你的权利</text>
+    <text class="p">· 随时查看、删除本地数据；</text>
+    <text class="p">· 拒绝授权相册/剪贴板能力，相应功能降级但核心功能不受影响；</text>
+    <text class="p">· 通过公众号或反馈入口联系我们行使你的权利。</text>
+  </view>
+
+  <view class="section">
+    <text class="h2">四、未成年人保护</text>
+    <text class="p">本小程序面向 14 岁以上用户，未成年人请在监护人指导下使用。</text>
+  </view>
+
+  <view class="section">
+    <text class="h2">五、更新与联系</text>
+    <text class="p">若本指引发生重要变更，我们会在小程序内显著位置提示。任何问题请通过公众号留言联系我们。</text>
+  </view>
+
+  <view class="footer">
+    <button class="btn-back" bindtap="goBack">我已阅读，返回</button>
+  </view>
+</view>

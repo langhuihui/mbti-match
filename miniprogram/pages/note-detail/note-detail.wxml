@@ -1,0 +1,148 @@
+<view class="page">
+  <!-- 自定义导航栏 -->
+  <view class="custom-nav" style="padding-top: {{statusBarHeight}}px;">
+    <view class="nav-content" style="height: {{headerHeight - statusBarHeight}}px;">
+      <view class="nav-back" bindtap="goBack">
+        <view class="nav-back-icon"></view>
+      </view>
+      <text class="nav-title">{{note.isMicro ? '关系瞬间' : '笔记详情'}}</text>
+      <button class="nav-share-btn" open-type="share">
+        <view class="share-icon"></view>
+      </button>
+    </view>
+  </view>
+
+  <!-- 笔记不存在 -->
+  <view class="not-found" wx:if="{{notFound}}" style="padding-top: {{headerHeight + 100}}px;">
+    <text class="not-found-emoji">🔍</text>
+    <text class="not-found-text">笔记不存在或已被删除</text>
+    <button class="not-found-btn" bindtap="goBack">返回</button>
+  </view>
+
+  <!-- 笔记详情 -->
+  <scroll-view class="content" scroll-y wx:if="{{note && !notFound}}" style="padding-top: {{headerHeight}}px;">
+    <!-- 作者信息 -->
+    <view class="author-section" bindtap="viewAuthorCard">
+      <image
+        class="author-avatar"
+        src="{{note.author.avatarUrl || '/images/default-avatar.svg'}}"
+        mode="aspectFill"
+      />
+      <view class="author-info">
+        <text class="author-name">{{note.author.nickname}}</text>
+        <view class="author-meta">
+          <view class="author-mbti" wx:if="{{note.groupInfo}}" style="background: {{note.groupInfo.color}};">
+            <text class="mbti-text">{{note.author.mbtiType}}</text>
+          </view>
+          <text class="author-type-name" wx:if="{{note.typeInfo}}">{{note.typeInfo.name}}</text>
+        </view>
+      </view>
+      <text class="note-time">{{note.timeText}}</text>
+    </view>
+
+    <!-- 关系瞬间标签 -->
+    <view class="moment-match" wx:if="{{note.isMicro && note.matchLabel}}">
+      <text>{{note.matchLabel}}</text>
+    </view>
+
+    <!-- 笔记正文 -->
+    <view class="note-content">
+      <text class="note-title" wx:if="{{note.title && !note.isMicro}}">{{note.title}}</text>
+      <text class="note-body {{note.isMicro ? 'micro-body' : ''}}">{{note.content}}</text>
+    </view>
+
+    <!-- 图片 -->
+    <view class="note-images" wx:if="{{note.images.length > 0 && !note.isMicro}}">
+      <image
+        class="note-img"
+        wx:for="{{note.images}}"
+        wx:key="*this"
+        src="{{item}}"
+        mode="widthFix"
+        data-src="{{item}}"
+        bindtap="previewImage"
+      />
+    </view>
+
+    <!-- 标签 -->
+    <view class="note-tags" wx:if="{{note.tags.length > 0}}">
+      <text class="note-tag" wx:for="{{note.tags}}" wx:for-item="tag" wx:key="*this">#{{tag}}</text>
+    </view>
+
+    <!-- 互动数据 -->
+    <view class="note-stats">
+      <text class="stat-text">{{note.likes}} 赞 · {{comments.length}} 评论</text>
+    </view>
+
+    <!-- 互动操作栏 -->
+    <view class="interaction-bar">
+      <view class="interact-btn {{note.isLiked ? 'active' : ''}}" bindtap="onLike">
+        <text class="interact-icon">{{note.isLiked ? '❤️' : '🤍'}}</text>
+        <text class="interact-text">{{note.isLiked ? '已赞' : '点赞'}}</text>
+      </view>
+      <view class="interact-btn" bindtap="showCommentBox">
+        <text class="interact-icon">💬</text>
+        <text class="interact-text">评论</text>
+      </view>
+      <view class="interact-btn {{note.isFavorited ? 'active' : ''}}" bindtap="onFavorite">
+        <text class="interact-icon">{{note.isFavorited ? '⭐' : '☆'}}</text>
+        <text class="interact-text">{{note.isFavorited ? '已收藏' : '收藏'}}</text>
+      </view>
+      <button class="interact-btn share-btn-wrap" open-type="share">
+        <text class="interact-icon">↗</text>
+        <text class="interact-text">分享</text>
+      </button>
+    </view>
+
+    <!-- 评论列表 -->
+    <view class="comments-section">
+      <text class="comments-title">评论 ({{comments.length}})</text>
+      
+      <view class="comment-list" wx:if="{{comments.length > 0}}">
+        <view class="comment-item" wx:for="{{comments}}" wx:key="id">
+          <image
+            class="comment-avatar"
+            src="{{item.avatarUrl || '/images/default-avatar.svg'}}"
+            mode="aspectFill"
+          />
+          <view class="comment-content">
+            <view class="comment-header">
+              <text class="comment-name">{{item.nickname}}</text>
+              <view class="comment-mbti" wx:if="{{item.groupInfo}}" style="background: {{item.groupInfo.color}};">
+                <text class="comment-mbti-text">{{item.mbtiType}}</text>
+              </view>
+              <text class="comment-time">{{item.timeText}}</text>
+            </view>
+            <text class="comment-text">{{item.content}}</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="no-comments" wx:else>
+        <text class="no-comments-text">还没有评论，来说两句吧 💬</text>
+      </view>
+    </view>
+
+    <!-- 底部占位 -->
+    <view style="height: 160rpx;"></view>
+  </scroll-view>
+
+  <!-- 底部评论输入栏 -->
+  <view class="comment-bar" wx:if="{{note && !notFound}}">
+    <view class="comment-trigger" bindtap="showCommentBox" wx:if="{{!showCommentInput}}">
+      <text class="comment-placeholder">说点什么...</text>
+    </view>
+    <view class="comment-input-area" wx:if="{{showCommentInput}}">
+      <input
+        class="comment-input"
+        placeholder="写下你的看法..."
+        value="{{commentInput}}"
+        bindinput="onCommentInput"
+        bindconfirm="sendComment"
+        focus="{{showCommentInput}}"
+        bindblur="hideCommentBox"
+      />
+      <button class="comment-send {{commentInput ? 'active' : ''}}" bindtap="sendComment">发送</button>
+    </view>
+  </view>
+</view>

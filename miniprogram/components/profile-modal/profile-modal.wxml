@@ -2,42 +2,61 @@
 <view class="modal-overlay {{show ? 'show' : ''}}" bindtap="onCancel">
   <view class="modal-content" catchtap="">
     <view class="modal-header">
-      <text class="modal-title">设置个人资料</text>
-      <text class="modal-subtitle">设置头像昵称，让好友认识你</text>
+      <text class="modal-title">修改个人资料</text>
+      <text class="modal-subtitle">可使用微信头像昵称，或随机生成</text>
     </view>
     
     <view class="profile-form">
-      <!-- 头像选择 -->
-      <view class="avatar-picker">
-        <button class="avatar-btn" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
-          <image
-            class="avatar-preview"
-            src="{{tempAvatarUrl || '/images/default-avatar.svg'}}"
-            mode="aspectFill"
-          />
-          <view class="avatar-edit-badge">
-            <view class="edit-icon icon-camera"></view>
+      <!-- 头像区域 -->
+      <view class="avatar-section">
+        <image
+          class="avatar-preview"
+          src="{{tempAvatarUrl || '/images/default-avatar.svg'}}"
+          mode="aspectFill"
+        />
+        <view class="avatar-actions">
+          <button class="action-chip wx-chip" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
+            <text class="chip-text">使用微信头像</text>
+          </button>
+          <view class="action-chip random-chip" bindtap="onRandomAvatar">
+            <text class="chip-text">🎲 随机头像</text>
           </view>
-        </button>
-        <text class="avatar-hint">点击更换头像</text>
+        </view>
       </view>
 
-      <!-- 昵称输入 -->
-      <view class="nickname-input-wrap">
-        <text class="input-label">昵称</text>
+      <!-- 昵称区域 -->
+      <view class="nickname-section">
+        <view class="nickname-row">
+          <text class="input-label">昵称</text>
+          <view class="nickname-actions">
+            <view class="action-chip-sm wx-chip-sm">
+              <input
+                class="nickname-input-hidden"
+                type="nickname"
+                placeholder=""
+                bindinput="onWxNicknameInput"
+                bindblur="onWxNicknameBlur"
+              />
+              <text class="chip-text-sm">微信昵称</text>
+            </view>
+            <view class="action-chip-sm random-chip-sm" bindtap="onRandomNickname">
+              <text class="chip-text-sm">🎲 随机</text>
+            </view>
+          </view>
+        </view>
         <input
           class="nickname-input"
-          type="nickname"
           placeholder="请输入昵称"
           value="{{tempNickname}}"
           bindinput="onNicknameInput"
+          maxlength="12"
         />
       </view>
     </view>
 
     <view class="modal-actions">
       <button class="modal-btn cancel" bindtap="onCancel">取消</button>
-      <button class="modal-btn confirm" bindtap="onConfirm">确认</button>
+      <button class="modal-btn confirm" bindtap="onConfirm">确认修改</button>
     </view>
   </view>
 </view>
